@@ -1,7 +1,3 @@
-/* body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
-} */
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -207,24 +203,6 @@ input:checked + .slider:before {
   margin-bottom: 0.6em;
 }
 
-/* Style the individual buttons */
-/* .edit-btn,
-.new-message-btn,
-.setting-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 0.5em 1em;
-  font-size: 1em;
-  cursor: pointer;
-  border-radius: 0.25em;
-} */
-
-/* Add some spacing between the Edit and New-Message buttons */
-/* .edit-btn {
-  margin-right: 0.625em;
-} */
-
 /* message-send-button */
 
 .menu-button {
@@ -273,6 +251,107 @@ input:checked + .slider:before {
   visibility: visible;
 }
 
+/* Read indicator */
+.read {
+  opacity: 0.5;
+}
+
+/* ########## FADE IN title Animation ########*/
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+h1 {
+  animation: fadeIn 2s ease-in-out;
+}
+/* ######## Help Modal slide Animation ######## */
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 1s ease;
+}
+.slide-fade-enter,
+.slide-fade-leave-to {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+/* ########### V-enter Animation ######### */
+.v-enter {
+  opacity: 0.75;
+  transform: translateY(20px);
+}
+.v-enter-active {
+  transition: all 1s ease-in-out;
+}
+/* ############ Auto complete animation ########## */
+.autocomplete-container ul {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+}
+.autocomplete-container ul[aria-expanded="true"] {
+  max-height: 25em;
+}
+/* ######### Typing indicator animation ########## */
+.typing-indicator {
+  display: inline-block;
+  animation: pulse 1s infinite;
+  margin-left: 0.3em;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+/* ########### messages-container animation ######## */
+.messages-container {
+  transition: background-color 1s ease;
+}
+
+.messages-container:hover {
+  background-color: rgba(86, 240, 117, 0.1);
+}
+/* ######### Profile Image animation ########## */
+.profile-image {
+  border: 3px solid transparent;
+  transition: border-color 1s ease;
+}
+
+.profile-image:hover {
+  border-color: #3f51b5;
+}
+/* ################ NEw message recieved notification ###### */
+.notification {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 5s, transform 0.5s;
+  animation: show-notification 5s forwards;
+}
+
+@keyframes show-notification {
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ####### Button Hover animation ######## */
+button {
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.1);
+}
 /* ###################### Responsive Design ###################### */
 /* Responsive styles */
 @media (min-width: 769px) {

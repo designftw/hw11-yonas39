@@ -28,7 +28,11 @@ const app = {
 
     // Initialize the collection of messages associated with the context
     const { objects: messagesRaw } = $gf.useObjects(context);
-    return { channel, privateMessaging, messagesRaw };
+    // return { channel, privateMessaging, messagesRaw }; // Commented to test the code below
+
+    // ############### Read Activity ####################
+    const { objects: readActivities } = $gf.useObjects(context);
+    return { channel, privateMessaging, messagesRaw, readActivities };
   },
 
   data() {
@@ -56,6 +60,10 @@ const app = {
       errorMessage: null, // I added this
 
       newMessagesCount: 0, // I added this
+
+      privateMessages: {}, // I added this
+
+      isTyping: false, // I added this
     };
   },
 
@@ -113,46 +121,28 @@ const app = {
         username ? username.toLowerCase().startsWith(searchInput) : null
       );
     },
+    // ######################### readActivities #######################
+    // ######################### readActivities #######################
+    readActivities() {
+      return this.readActivities.filter((activity) => activity.type === "Read");
+    },
   },
 
   methods: {
+    // ######### ... Typing  ############
+    hadleInputFocus() {
+      this.isTyping = true;
+    },
+    handleInputBlur() {
+      this.isTyping = false;
+    },
+
+    // ######## Date Format ##################
     formatDate(dateString) {
       const date = new Date(dateString);
       return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     },
-    // togglePrivateMessaging() {
-    //   this.privateMessaging = !this.privateMessaging;
-    //   // if (this.privateMessaging) {
-    //   //   this.privateMessaging = !this.privateMessaging;
-    //   // } else {
-    //   //   this.privateMessaging = this.privateMessaging;
-    //   // }
-    // },
-    // ##########################  Notification #################################
-    // ##########################  Notification #################################
-    // ##########################  Notification #################################
-    // playNotificationSound() {
-    //   const audio = new Audio("new_text.mp3");
-    // },
-    // onMessageRecieved(message){
 
-    // },
-    incrementNewMessagesCount() {
-      this.newMessagesCount += 1;
-    },
-    onMessageReceived(message) {
-      // Call this method when a new message is received
-      this.incrementNewMessagesCount();
-      // Handle the received message
-    },
-    resetNewMessagesCount() {
-      this.newMessagesCount = 0;
-    },
-    openChat() {
-      // Call this method when the user opens or switches to the chat window
-      this.resetNewMessagesCount();
-      // Open the chat window or switch to it
-    },
     // ##########################  toggleHelpModal #################################
     // ##########################  toggleHelpModal #################################
     // ##########################  toggleHelpModal #################################
@@ -298,6 +288,32 @@ const app = {
       this.messageText = "";
     },
 
+    // ########################## Mark as Read #################################
+    // ########################## Mark as Read #################################
+    // ########################## Mark as Read #################################
+    markAsRead(message) {
+      const readActivity = {
+        type: "Read",
+        object: message.id,
+        context: [message.id],
+        bto: [], // Only the creator can see this object
+      };
+      this.$gf.post(readActivity);
+    },
+
+    onMessageClick(message) {
+      this.markAsRead(message);
+    },
+
+    isMessageRead(message) {
+      return this.readActivities.some(
+        (activity) => activity.object === message.id
+      );
+    },
+
+    // ############################ End ############################
+    // ############################ End ############################
+    // ############################ End ############################
     removeMessage(message) {
       this.$gf.remove(message);
     },
@@ -393,9 +409,9 @@ const Name = {
       this.editing = false;
     },
   },
-
   template: "#name",
 };
 
 app.components = { Name };
+
 Vue.createApp(app).use(GraffitiPlugin(Vue)).mount("#app");

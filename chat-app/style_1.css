@@ -112,7 +112,7 @@ input[type="submit"]:hover {
 /* #################### Help Style ##################### */
 .help-button-container,
 .help-modal {
-  position: fixed;
+  position: absolute;
   top: 1.3em;
   right: 1.3em;
   z-index: 1000;
@@ -202,3 +202,9 @@ input[type="submit"]:hover {
 }
 
 /* ############ Send Message ############# */
+.read-indicator {
+  display: block;
+  font-size: 14px;
+  color: #ee1a48;
+  margin-left: 4px;
+}

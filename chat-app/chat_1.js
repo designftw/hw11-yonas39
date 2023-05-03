@@ -60,6 +60,9 @@ const app = {
       // problem-3
       myUsername: "", // I added this
       actorToUsername: {}, //I added this
+      //Sending Media in Chat
+      // file: null, // I added this
+      downloadedImages: {}, // I added this
 
       // Need to double check the line below this
       usernames: {}, // I added this
@@ -77,8 +80,7 @@ const app = {
       isTyping: false, // I added this
     };
   },
-  // ////////////////////////////////////////Copied from the solution ###########
-  // Problem 3 solution
+  // ################ Sending media in chat (watch) ###########
   watch: {
     "$gf.me": async function (me) {
       this.myUsername = await this.resolver.actorToUsername(me);
@@ -86,34 +88,98 @@ const app = {
 
     async messages(messages) {
       for (const m of messages) {
-        if (!(m.actor in this.actorsToUsernames)) {
-          this.actorsToUsernames[m.actor] = await this.resolver.actorToUsername(
+        if (!(m.actor in this.actorToUsername)) {
+          this.actorToUsername[m.actor] = await this.resolver.actorToUsername(
             m.actor
           );
         }
-        if (m.bto && m.bto.length && !(m.bto[0] in this.actorsToUsernames)) {
-          this.actorsToUsernames[m.bto[0]] =
-            await this.resolver.actorToUsername(m.bto[0]);
+        if (m.bto && m.bto.length && !(m.bto[0] in this.actorToUsername)) {
+          this.actorToUsername[m.bto[0]] = await this.resolver.actorToUsername(
+            m.bto[0]
+          );
         }
       }
     },
 
     async messagesWithAttachments(messages) {
       for (const m of messages) {
-        if (!(m.attachment.magnet in this.imageDownloads)) {
-          this.imageDownloads[m.attachment.magnet] = "downloading";
+        if (!(m.attachment.magnet in this.downloadedImages)) {
+          this.downloadedImages[m.attachment.magnet] = "downloading";
           let blob;
           try {
             blob = await this.$gf.media.fetch(m.attachment.magnet);
           } catch (e) {
-            this.imageDownloads[m.attachment.magnet] = "error";
+            this.downloadedImages[m.attachment.magnet] = "error";
             continue;
           }
-          this.imageDownloads[m.attachment.magnet] = URL.createObjectURL(blob);
+          this.downloadedImages[m.attachment.magnet] =
+            URL.createObjectURL(blob);
         }
       }
     },
   },
+  // watch: {
+  //   messages(messages) {
+  //     // Filter for messages with image attachments
+  //     const imageMessages = messages.filter(
+  //       (msg) =>
+  //         msg.attachment &&
+  //         msg.attachment.type === "Image" &&
+  //         typeof msg.attachment.magnet === "string"
+  //     );
+
+  //     // Loop through the image messages
+  //     for (const msg of imageMessages) {
+  //       const magnet = msg.attachment.magnet;
+
+  //       if (!this.downloadedImages[magnet]) {
+  //         // Download the image and store the URL in the cache
+  //         this.$gf.media.fetch(magnet).then((blob) => {
+  //           const url = URL.createObjectURL(blob);
+  //           this.downloadedImages[magnet] = url;
+  //         });
+  //       }
+  //     }
+  //   },
+  // },
+
+  // ////////////////////////////////////////Copied from the solution ###########
+  // Problem 3 solution
+  // watch: {
+  //   "$gf.me": async function (me) {
+  //     this.myUsername = await this.resolver.actorToUsername(me);
+  //   },
+
+  //   async messages(messages) {
+  //     for (const m of messages) {
+  //       if (!(m.actor in this.actorsToUsernames)) {
+  //         this.actorsToUsernames[m.actor] = await this.resolver.actorToUsername(
+  //           m.actor
+  //         );
+  //       }
+  //       if (m.bto && m.bto.length && !(m.bto[0] in this.actorsToUsernames)) {
+  //         this.actorsToUsernames[m.bto[0]] =
+  //           await this.resolver.actorToUsername(m.bto[0]);
+  //       }
+  //     }
+  //   },
+
+  //   async messagesWithAttachments(messages) {
+  //     for (const m of messages) {
+  //       if (!(m.attachment.magnet in this.imageDownloads)) {
+  //         this.imageDownloads[m.attachment.magnet] = "downloading";
+  //         let blob;
+  //         try {
+  //           blob = await this.$gf.media.fetch(m.attachment.magnet);
+  //         } catch (e) {
+  //           this.imageDownloads[m.attachment.magnet] = "error";
+  //           continue;
+  //         }
+  //         this.imageDownloads[m.attachment.magnet] = URL.createObjectURL(blob);
+  //       }
+  //     }
+  //   },
+  // },
   /////////////////////////////
   computed: {
     // ########################## Messages #################################
@@ -159,6 +225,16 @@ const app = {
           .slice(0, 10)
       );
     },
+
+    // ################ Sending media in chat (watch) ###########
+    messagesWithAttachments() {
+      return this.messages.filter(
+        (m) =>
+          m.attachment &&
+          m.attachment.type == "Image" &&
+          typeof m.attachment.magnet == "string"
+      );
+    },
     // ########################## filteredUsernames #################################
     // ########################## filteredUsernames #################################
 
@@ -177,6 +253,13 @@ const app = {
   },
 
   methods: {
+    // ########## Sending media in chat ###############
+    onImageAttachment(event) {
+      const file = event.target.files[0];
+      this.file = file;
+    },
+    // ###### media END ############
+
     // ######### ... Typing  ############
     hadleInputFocus() {
       this.isTyping = true;
@@ -326,12 +409,19 @@ const app = {
     // ########################## sendMessage() #################################
     // ########################## sendMessage() #################################
     // ########################## sendMessage() #################################
-
-    sendMessage() {
+    async sendMessage() {
       const message = {
         type: "Note",
         content: this.messageText,
       };
+
+      if (this.file) {
+        message.attachment = {
+          type: "Image",
+          magnet: await this.$gf.media.store(this.file),
+        };
+        this.file = null;
+      }
 
       // The context field declares which
       // channel(s) the object is posted in
@@ -349,6 +439,63 @@ const app = {
 
       this.messageText = "";
     },
+    // async sendMessage() {
+    //   let attachment = null;
+
+    //   if (this.file) {
+    //     const magnetURI = await this.$gf.media.store(this.file);
+    //     attachment = {
+    //       type: "Image",
+    //       magnet: magnetURI,
+    //     };
+    //     // Reset the attachedFile after sending the message
+    //     this.file = null;
+    //   }
+
+    //   const message = {
+    //     type: "Note",
+    //     content: this.messageText,
+    //     ...(attachment ? { attachment } : {}),
+    //   };
+    //   // The context field declares which
+    //   // channel(s) the object is posted in
+    //   // You can post in more than one if you want!
+    //   // The bto field makes messages private
+    //   if (this.privateMessaging) {
+    //     message.bto = [this.recipient];
+    //     message.context = [this.$gf.me, this.recipient];
+    //   } else {
+    //     message.context = [this.channel];
+    //   }
+
+    //   // Send!
+    //   this.$gf.post(message);
+
+    //   this.messageText = "";
+    // },
+
+    // sendMessage() {
+    //   const message = {
+    //     type: "Note",
+    //     content: this.messageText,
+    //   };
+
+    //   // The context field declares which
+    //   // channel(s) the object is posted in
+    //   // You can post in more than one if you want!
+    //   // The bto field makes messages private
+    //   if (this.privateMessaging) {
+    //     message.bto = [this.recipient];
+    //     message.context = [this.$gf.me, this.recipient];
+    //   } else {
+    //     message.context = [this.channel];
+    //   }
+
+    //   // Send!
+    //   this.$gf.post(message);
+
+    //   this.messageText = "";
+    // },
 
     // ########################## Mark as Read #################################
     // ########################## Mark as Read #################################

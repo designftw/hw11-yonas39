@@ -1,6 +1,19 @@
 /* ####### Body style ######### */
 body {
-  background-color: #b4fad8;
+  /* background-color: #b4fad8; */
+  /* background: linear-gradient(to bottom, #b4fad8, #101010); */
+  /* background: linear-gradient(135deg, #b4fad8, #fff);*/
+  background: linear-gradient(
+    to bottom,
+    #b4fad8,
+    #97f7c5,
+    #78f4b1,
+    #5aea9c,
+    #47d08e
+  );
+  /* background: linear-gradient(to bottom right, #b4fad8, #fff); */
+  /* background: radial-gradient(circle at center, #b4fad8, #101010); */
+
   font-family: Helvetica, sans-serif;
   margin: 0;
   padding: 2em;

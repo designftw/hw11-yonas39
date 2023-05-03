@@ -38,8 +38,8 @@
       </div>
 
       <transition name="slide-fade">
-        <div class="help-modal" v-if="showHelpModal">
-          >
+        <div class="help-modal" v-if="showHelpModal" >
+          
           <!-- <h2>Help</h2> -->
           <!-- <p>Explanation of features and functionality here...</p> -->
           <p>
@@ -237,14 +237,37 @@
                   <span v-if="!privateMessaging"
                     >From: <name :actor="message.actor"></name
                   ></span>
-                  <span v-else>To :<name :actor="message.bto[0]"></name> </span>
+                  <span v-else>To :<name :actor="message.bto[0]"></name> </span>  
+                   <!-- <span v-if="!privateMessaging"
+                    >From: {{myUsername}}</span>-->
                 </div>
 
                 <li id="text-message">Message: {{ message.content }}</li>
+
+                <!-- ############ Sending media in chat ######### -->
+                <!-- <template v-if="message.attachment && message.attachment.type === 'Image'">
+                  <img :src="downloadedImages[message.attachment.magnet]" />
+                </template> -->
+                <div v-if="message.attachment">
+                  <div v-if="!downloadedImages[message.attachment.magnet]">
+                    Loading image...
+                  </div>
+                  <img
+                    v-else
+                    :src="downloadedImages[message.attachment.magnet]"
+                    alt="Image attachment"
+                  />
+                </div>
+                
+
+                <!-- ############## Sending Media in Chat ############
+                <input type="file" accept="image/*" @change="onImageAttachment" /> -->
+
+
                 <p v-if="isMessageRead(message)" class="read-indicator">✓✓</p>
 
                 <!--################## from solution ###############-->
-                <li v-if="message.attachment && message.attachment.magnet in imageDownloads">
+                <!-- <li v-if="message.attachment && message.attachment.magnet in imageDownloads">
                   <span v-if="imageDownloads[message.attachment.magnet]=='downloading'">
                     Image is downloading...
                   </span>
@@ -252,7 +275,7 @@
                     Image could not be downloaded!
                   </span>
                   <img v-else :src="imageDownloads[message.attachment.magnet]" />
-                </li>
+                </li> -->
                 <!-- ################## from solution END here ###############--> 
                 
                 <!-- ############### A menue ... for Delete and Edit ##############################-->
@@ -296,6 +319,9 @@
                 @focus="handleInputFocus"
                 @blur="handleInputBlur"
               />
+              
+              <!-- ############## Sending Media in Chat ############-->
+              <input type="file" accept="image/*" @change="onImageAttachment" />
               <!--####### typing Indicator ####### -->
               <span class="typing-indicator" v-if="isTyping">&#x2022;</span>
 

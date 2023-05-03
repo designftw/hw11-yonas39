@@ -116,6 +116,18 @@ const app = {
   },
 
   methods: {
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    },
+    // togglePrivateMessaging() {
+    //   this.privateMessaging = !this.privateMessaging;
+    //   // if (this.privateMessaging) {
+    //   //   this.privateMessaging = !this.privateMessaging;
+    //   // } else {
+    //   //   this.privateMessaging = this.privateMessaging;
+    //   // }
+    // },
     // ##########################  Notification #################################
     // ##########################  Notification #################################
     // ##########################  Notification #################################
@@ -304,6 +316,11 @@ const app = {
       // And clear the edit mark
       this.editID = "";
     },
+
+    // I added this line
+    // startEditMessageNewButton(message) {
+    //   this.startEditMessage(message);
+    // },
   },
 };
 

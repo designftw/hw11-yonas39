@@ -1,0 +1,62 @@
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  h1 {
+    font-size: 28px;
+  }
+
+  .private-public {
+    font-size: 14px;
+  }
+
+  .profile-name {
+    font-size: 14px;
+  }
+
+  .request-username {
+    font-size: 14px;
+  }
+
+  .message-send-button {
+    display: flex;
+    justify-content: center;
+  }
+
+  .submit-text-box {
+    width: 80%;
+  }
+
+  .submit-button {
+    width: 20%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  .private-public {
+    font-size: 12px;
+  }
+
+  .profile-name {
+    font-size: 12px;
+  }
+
+  .request-username {
+    font-size: 12px;
+  }
+
+  .message-send-button {
+    display: flex;
+    justify-content: center;
+  }
+
+  .submit-text-box {
+    width: 75%;
+  }
+
+  .submit-button {
+    width: 25%;
+  }
+}

@@ -200,10 +200,3 @@ input[type="submit"]:hover {
 }
 
 /* ############ Send Message ############# */
-.send-button {
-  display: block;
-  margin-bottom: 2em;
-  text-align: center;
-  /* font-size: 130%; */
-  font-weight: bold;
-}

@@ -43,14 +43,25 @@ const app = {
       editText: "",
       recipient: "",
 
-      requestedUsername: "", // I added this
-      usernameError: "", // I added this
-      usernameSuccess: "", // I added this
+      // /////////////////////////////////////
+      //  problem-1
+      preferredUsername: "", // I added this
+      usernameResult: "", // I added this
 
+      // requestedUsername: "", // I added this
+      // usernameError: "", // I added this
+      // usernameSuccess: "", // I added this
+
+      // Problem-2
       searchError: "", // I added this
       searchLoading: false, // I added this
       searchedUsername: "", // I added this
+      recipientUsername: "", // I added this
+      // problem-3
+      myUsername: "", // I added this
+      actorToUsername: {}, //I added this
 
+      // Need to double check the line below this
       usernames: {}, // I added this
 
       encounteredUsernames: [], //I added this
@@ -66,7 +77,44 @@ const app = {
       isTyping: false, // I added this
     };
   },
+  // ////////////////////////////////////////Copied from the solution ###########
+  // Problem 3 solution
+  watch: {
+    "$gf.me": async function (me) {
+      this.myUsername = await this.resolver.actorToUsername(me);
+    },
 
+    async messages(messages) {
+      for (const m of messages) {
+        if (!(m.actor in this.actorsToUsernames)) {
+          this.actorsToUsernames[m.actor] = await this.resolver.actorToUsername(
+            m.actor
+          );
+        }
+        if (m.bto && m.bto.length && !(m.bto[0] in this.actorsToUsernames)) {
+          this.actorsToUsernames[m.bto[0]] =
+            await this.resolver.actorToUsername(m.bto[0]);
+        }
+      }
+    },
+
+    async messagesWithAttachments(messages) {
+      for (const m of messages) {
+        if (!(m.attachment.magnet in this.imageDownloads)) {
+          this.imageDownloads[m.attachment.magnet] = "downloading";
+          let blob;
+          try {
+            blob = await this.$gf.media.fetch(m.attachment.magnet);
+          } catch (e) {
+            this.imageDownloads[m.attachment.magnet] = "error";
+            continue;
+          }
+          this.imageDownloads[m.attachment.magnet] = URL.createObjectURL(blob);
+        }
+      }
+    },
+  },
+  /////////////////////////////
   computed: {
     // ########################## Messages #################################
     // ########################## Messages #################################
@@ -134,7 +182,7 @@ const app = {
       this.isTyping = true;
     },
     handleInputBlur() {
-      this.isTyping = false;
+      this.isBlur = false;
     },
 
     // ######## Date Format ##################
@@ -187,48 +235,61 @@ const app = {
     // ########################## Request Username #################################
     // ########################## Request Username #################################
     // ########################## Request Username #################################
-    requestUsername() {
-      if (!this.requestedUsername) {
-        this.usernameError =
-          "Username Can not be Empty! Plase type a username.";
+    async setUsername() {
+      try {
+        this.usernameResult = await this.resolver.requestUsername(
+          this.preferredUsername
+        );
+        this.myUsername = this.preferredUsername;
+      } catch (e) {
+        this.usernameResult = e.toString();
         setTimeout(() => {
-          this.usernameError = "";
+          this.usernameResult = "";
         }, 2000);
-        return;
       }
-      // call the appropriate resolver functiont to request username
-      this.resolver
-        .requestUsername(this.requestedUsername)
-        .then((response) => {
-          if (response === "success") {
-            // clear the Username input and error message
-            this.requestedUsername = "";
-            this.usernameError = "";
-
-            // display a text that the request succeded and disapear after a 1 sec ..
-            // alert("username Successful!");
-            this.usernameSuccess =
-              "Congratulations! Your username request has been approved.";
-            setTimeout(() => {
-              this.usernameSuccess = "";
-            }, 2000);
-          } else {
-            this.usernameError =
-              "The User is name is taken. Please try another one!";
-            setTimeout(() => {
-              this.usernameError = "";
-            }, 2000);
-          }
-        })
-        .catch((error) => {
-          // handles any other error that might occur
-          this.usernameError =
-            "An error occurred while requesting the username! Please try again.";
-          setTimeout(() => {
-            this.usernameError = "";
-          }, 2000);
-        });
     },
+    // requestUsername() {
+    //   if (!this.requestedUsername) {
+    //     this.usernameError =
+    //       "Username Can not be Empty! Plase type a username.";
+    //     setTimeout(() => {
+    //       this.usernameError = "";
+    //     }, 2000);
+    //     return;
+    //   }
+    //   // call the appropriate resolver functiont to request username
+    //   this.resolver
+    //     .requestUsername(this.requestedUsername)
+    //     .then((response) => {
+    //       if (response === "success") {
+    //         // clear the Username input and error message
+    //         this.requestedUsername = "";
+    //         this.usernameError = "";
+
+    //         // display a text that the request succeded and disapear after a 1 sec ..
+    //         // alert("username Successful!");
+    //         this.usernameSuccess =
+    //           "Congratulations! Your username request has been approved.";
+    //         setTimeout(() => {
+    //           this.usernameSuccess = "";
+    //         }, 2000);
+    //       } else {
+    //         this.usernameError =
+    //           "The User is name is taken. Please try another one!";
+    //         setTimeout(() => {
+    //           this.usernameError = "";
+    //         }, 2000);
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       // handles any other error that might occur
+    //       this.usernameError =
+    //         "An error occurred while requesting the username! Please try again.";
+    //       setTimeout(() => {
+    //         this.usernameError = "";
+    //       }, 2000);
+    //     });
+    // },
 
     // ########################## Search by Username #################################
     // ########################## Search by Username #################################
@@ -248,6 +309,7 @@ const app = {
         if (actorID) {
           this.recipient = actorID;
           this.searchError = "";
+          this.recipientUsername = this.searchedUsername;
         } else {
           this.searchError = "No matching username is found.";
           setTimeout(() => {
@@ -411,7 +473,52 @@ const Name = {
   },
   template: "#name",
 };
+const Like = {
+  props: ["messageid"],
 
-app.components = { Name };
+  setup(props) {
+    const $gf = Vue.inject("graffiti");
+    const messageid = Vue.toRef(props, "messageid");
+    const { objects: likesRaw } = $gf.useObjects([messageid]);
+    return { likesRaw };
+  },
+
+  computed: {
+    likes() {
+      return this.likesRaw.filter(
+        (l) => l.type == "Like" && l.object == this.messageid
+      );
+    },
+
+    numLikes() {
+      // Unique number of actors
+      return [...new Set(this.likes.map((l) => l.actor))].length;
+    },
+
+    myLikes() {
+      return this.likes.filter((l) => l.actor == this.$gf.me);
+    },
+  },
+
+  methods: {
+    toggleLike() {
+      if (this.myLikes.length) {
+        this.$gf.remove(...this.myLikes);
+      } else {
+        this.$gf.post({
+          type: "Like",
+          object: this.messageid,
+          context: [this.messageid],
+        });
+      }
+    },
+  },
+
+  template: "#like",
+};
+
+app.components = { Name, Like };
+
+// app.components = { Name };
 
 Vue.createApp(app).use(GraffitiPlugin(Vue)).mount("#app");

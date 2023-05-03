@@ -1,0 +1,54 @@
+/* css for all of your write ups here */
+body {
+  font-family: "Georgia", serif;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 0 20px;
+  background-color: #f5f5f5;
+}
+
+h1 {
+  font-size: 2.5em;
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+article {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 15px;
+  padding-left: 20px;
+  position: relative;
+}
+
+li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #333;
+}
+
+strong {
+  font-size: 1.1em;
+  color: #333;
+}
+
+video {
+  display: block;
+  margin: 30px auto;
+  max-width: 100%;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}

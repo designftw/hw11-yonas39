@@ -24,7 +24,9 @@ ul {
 
 /* main app style sheet */
 #app {
-  background-color: #ffffff;
+  transition: background-color 0.3s ease;
+
+  /* background-color: #ffffff; */
   border-radius: 0.5em;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 

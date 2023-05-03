@@ -275,6 +275,13 @@ input:checked + .slider:before {
 
 /* ###################### Responsive Design ###################### */
 /* Responsive styles */
+@media (min-width: 769px) {
+  #app {
+    background-color: #ffffff;
+    transition-duration: 3s;
+    /* background-color: ; */
+  }
+}
 @media (max-width: 768px) {
   body {
     padding: 1rem;
@@ -289,6 +296,7 @@ input:checked + .slider:before {
 
     max-width: 100%;
     box-sizing: border-box;
+    transition-duration: 3s;
   }
   .wrapper {
     margin: 0;

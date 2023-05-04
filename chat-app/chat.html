@@ -21,13 +21,14 @@
       <!-- ############### Chat format PUBLIC / PRIVATE ##############################-->
       <!-- ############### Chat format PUBLIC / PRIVATE ##############################-->
       <!-- ############### Chat format PUBLIC / PRIVATE ##############################-->
-      <div class="private-public"> 
-        <label class="switch"> 
+      <div class="private-public">
+        <label class="switch">
           <input id="toggle" type="checkbox" v-model="privateMessaging" />
           <span class="slider round"></span>
         </label>
-        <span class="toggle-label"
-          > Chat Mode: {{ privateMessaging ? 'Private Chat' : 'Public Chat' }}</span
+        <span class="toggle-label">
+          Chat Mode: {{ privateMessaging ? 'Private Chat' : 'Public Chat'
+          }}</span
         >
       </div>
 
@@ -38,8 +39,7 @@
       </div>
 
       <transition name="slide-fade">
-        <div class="help-modal" v-if="showHelpModal" >
-          
+        <div class="help-modal" v-if="showHelpModal">
           <!-- <h2>Help</h2> -->
           <!-- <p>Explanation of features and functionality here...</p> -->
           <p>
@@ -125,13 +125,16 @@
           <span class="error" v-if="usernameError">{{usernameError}}</span>
         </div> -->
         <div class="request-username">
-          <p>
-            <form @submit.prevent="setUsername">
-              <input v-model="preferredUsername" placeholder="Choose a username..."/>
-              <input type="submit" value="Set Username"/>
-            </form>
-            {{ usernameResult }}
-          </p>
+          <!-- <p></p> -->
+          <form @submit.prevent="setUsername">
+            <input
+              v-model="preferredUsername"
+              placeholder="Choose a username..."
+            />
+            <input type="submit" value="Set Username" />
+          </form>
+          {{ usernameResult }}
+          <!-- </p> -->
           <!-- <p>Request Username :</p>
           <form @submit.prevent="requestUsername">
             <input placeholder="Type a Username..." />
@@ -177,9 +180,7 @@
           <label for="username">Search by Username:</label>
           <input id="username" v-model="searchedUsername" />
           <button @click="searchByUsername">Search</button>
-          <span v-if="recipient">
-            Chatting with {{ recipientUsername }}
-          </span>
+          <span v-if="recipient"> Chatting with {{ recipientUsername }} </span>
           <span class="search-status" v-if="searchError"
             >{{ searchError }}</span
           >
@@ -237,8 +238,8 @@
                   <span v-if="!privateMessaging"
                     >From: <name :actor="message.actor"></name
                   ></span>
-                  <span v-else>To :<name :actor="message.bto[0]"></name> </span>  
-                   <!-- <span v-if="!privateMessaging"
+                  <span v-else>To :<name :actor="message.bto[0]"></name> </span>
+                  <!-- <span v-if="!privateMessaging"
                     >From: {{myUsername}}</span>-->
                 </div>
 
@@ -258,13 +259,11 @@
                     alt="Image attachment"
                   />
                 </div>
-                
 
                 <!-- ############## Sending Media in Chat ############
                 <input type="file" accept="image/*" @change="onImageAttachment" /> -->
 
-
-                <p v-if="isMessageRead(message)" class="read-indicator">✓✓</p>
+                <!-- <p v-if="isMessageRead(message)" class="read-indicator">✓✓</p> -->
 
                 <!--################## from solution ###############-->
                 <!-- <li v-if="message.attachment && message.attachment.magnet in imageDownloads">
@@ -276,8 +275,8 @@
                   </span>
                   <img v-else :src="imageDownloads[message.attachment.magnet]" />
                 </li> -->
-                <!-- ################## from solution END here ###############--> 
-                
+                <!-- ################## from solution END here ###############-->
+
                 <!-- ############### A menue ... for Delete and Edit ##############################-->
                 <!-- ############### A menue ... for Delete and Edit  ##############################-->
                 <!-- Only add these controls if the message is ours -->
@@ -294,6 +293,23 @@
                     </template>
                     <li>
                       <like :messageid="message.id"></like>
+                    </li>
+
+                    <li>
+                      <read
+                        :messageid="message.id"
+                        :sender="message.sender"
+                      ></read>
+                    </li>
+                    <!-- <li>
+                      <reply :messageid="message.id"></reply>
+                    </li> -->
+                    <li>
+                      <reply
+                        :messageid="message.id"
+                        :content="message.content"
+                        :sender="message.sender"
+                      ></reply>
                     </li>
                   </div>
                   <div class="message-timestamp">
@@ -319,7 +335,7 @@
                 @focus="handleInputFocus"
                 @blur="handleInputBlur"
               />
-              
+
               <!-- ############## Sending Media in Chat ############-->
               <input type="file" accept="image/*" @change="onImageAttachment" />
               <!--####### typing Indicator ####### -->
@@ -352,12 +368,42 @@
       </form>
     </template>
 
+    <!-- ############# LIKE Template ################# -->
     <template id="like">
       <button @click="toggleLike">
         {{ myLikes.length? 'Unlike' : 'Like' }}
       </button>
-      # of likes:  {{ numLikes }}
+      liked by: {{ numLikes }}
     </template>
 
+    <!-- ############# READ Template ################# -->
+    <template id="read">
+      <div>
+        <span v-if="sender === $gf.me && myReads.length">✓✓</span>
+      </div>
+      <div v-if="sender !== $gf.me">
+        <!-- ✓✓ -->
+        read by: {{ numReads }}
+      </div>
+    </template>
+
+    <!-- ############# REPLY Template ################# -->
+    <template id="reply">
+      <div class="reply-container">
+        <button @click="showReplyForm = !showReplyForm">Reply</button>
+        <div v-if="showReplyForm" class="reply-form">
+          <div class="quoted-message">
+            <span>Replying to:</span>
+            <span>{{ repliedMessageSnippet }}</span>
+          </div>
+          <input
+            type="text"
+            v-model="replyContent"
+            placeholder="Write a reply..."
+          />
+          <button @click="sendReply">Send</button>
+        </div>
+      </div>
+    </template>
   </body>
 </html>

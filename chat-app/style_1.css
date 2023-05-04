@@ -221,3 +221,87 @@ input[type="submit"]:hover {
   color: #ee1a48;
   margin-left: 4px;
 }
+#like {
+  margin-right: 0.25em;
+}
+#read {
+  margin-left: 0.25em;
+}
+/* ################## Read indicator ################# */
+/* .read-indicator {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.num-reads {
+  margin-right: 5px;
+}
+
+.checkmark-icon {
+  width: 14px;
+  height: 14px;
+  background-image: url("checkMark.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+} */
+.reply-container {
+  margin-top: 1rem;
+}
+
+.reply-form {
+  display: flex;
+  align-items: center;
+}
+
+.reply-form input {
+  flex-grow: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+
+.reply-form button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #2196f3;
+  color: #fff;
+  cursor: pointer;
+}
+
+.replies-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.replies-list li {
+  padding: 0.5rem;
+  background-color: #f1f1f1;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+}
+
+.replied-message {
+  font-weight: bold;
+  color: #888;
+}
+
+.quoted-message {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+  border-left: 2px solid #2196f3;
+  padding-left: 0.5rem;
+}
+
+.reply-form {
+  display: flex;
+  flex-direction: column;
+  background-color: #f1f1f1;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}

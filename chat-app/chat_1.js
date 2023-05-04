@@ -118,69 +118,7 @@ const app = {
       }
     },
   },
-  // watch: {
-  //   messages(messages) {
-  //     // Filter for messages with image attachments
-  //     const imageMessages = messages.filter(
-  //       (msg) =>
-  //         msg.attachment &&
-  //         msg.attachment.type === "Image" &&
-  //         typeof msg.attachment.magnet === "string"
-  //     );
 
-  //     // Loop through the image messages
-  //     for (const msg of imageMessages) {
-  //       const magnet = msg.attachment.magnet;
-
-  //       if (!this.downloadedImages[magnet]) {
-  //         // Download the image and store the URL in the cache
-  //         this.$gf.media.fetch(magnet).then((blob) => {
-  //           const url = URL.createObjectURL(blob);
-  //           this.downloadedImages[magnet] = url;
-  //         });
-  //       }
-  //     }
-  //   },
-  // },
-
-  // ////////////////////////////////////////Copied from the solution ###########
-  // Problem 3 solution
-  // watch: {
-  //   "$gf.me": async function (me) {
-  //     this.myUsername = await this.resolver.actorToUsername(me);
-  //   },
-
-  //   async messages(messages) {
-  //     for (const m of messages) {
-  //       if (!(m.actor in this.actorsToUsernames)) {
-  //         this.actorsToUsernames[m.actor] = await this.resolver.actorToUsername(
-  //           m.actor
-  //         );
-  //       }
-  //       if (m.bto && m.bto.length && !(m.bto[0] in this.actorsToUsernames)) {
-  //         this.actorsToUsernames[m.bto[0]] =
-  //           await this.resolver.actorToUsername(m.bto[0]);
-  //       }
-  //     }
-  //   },
-
-  //   async messagesWithAttachments(messages) {
-  //     for (const m of messages) {
-  //       if (!(m.attachment.magnet in this.imageDownloads)) {
-  //         this.imageDownloads[m.attachment.magnet] = "downloading";
-  //         let blob;
-  //         try {
-  //           blob = await this.$gf.media.fetch(m.attachment.magnet);
-  //         } catch (e) {
-  //           this.imageDownloads[m.attachment.magnet] = "error";
-  //           continue;
-  //         }
-  //         this.imageDownloads[m.attachment.magnet] = URL.createObjectURL(blob);
-  //       }
-  //     }
-  //   },
-  // },
-  /////////////////////////////
   computed: {
     // ########################## Messages #################################
     // ########################## Messages #################################
@@ -439,86 +377,29 @@ const app = {
 
       this.messageText = "";
     },
-    // async sendMessage() {
-    //   let attachment = null;
 
-    //   if (this.file) {
-    //     const magnetURI = await this.$gf.media.store(this.file);
-    //     attachment = {
-    //       type: "Image",
-    //       magnet: magnetURI,
-    //     };
-    //     // Reset the attachedFile after sending the message
-    //     this.file = null;
-    //   }
-
-    //   const message = {
-    //     type: "Note",
-    //     content: this.messageText,
-    //     ...(attachment ? { attachment } : {}),
+    // ########################## Mark as Read #################################
+    // ########################## Mark as Read #################################
+    // ########################## Mark as Read #################################
+    // markAsRead(message) {
+    //   const readActivity = {
+    //     type: "Read",
+    //     object: message.id,
+    //     context: [message.id],
+    //     bto: [], // Only the creator can see this object
     //   };
-    //   // The context field declares which
-    //   // channel(s) the object is posted in
-    //   // You can post in more than one if you want!
-    //   // The bto field makes messages private
-    //   if (this.privateMessaging) {
-    //     message.bto = [this.recipient];
-    //     message.context = [this.$gf.me, this.recipient];
-    //   } else {
-    //     message.context = [this.channel];
-    //   }
-
-    //   // Send!
-    //   this.$gf.post(message);
-
-    //   this.messageText = "";
+    //   this.$gf.post(readActivity);
     // },
 
-    // sendMessage() {
-    //   const message = {
-    //     type: "Note",
-    //     content: this.messageText,
-    //   };
-
-    //   // The context field declares which
-    //   // channel(s) the object is posted in
-    //   // You can post in more than one if you want!
-    //   // The bto field makes messages private
-    //   if (this.privateMessaging) {
-    //     message.bto = [this.recipient];
-    //     message.context = [this.$gf.me, this.recipient];
-    //   } else {
-    //     message.context = [this.channel];
-    //   }
-
-    //   // Send!
-    //   this.$gf.post(message);
-
-    //   this.messageText = "";
+    // onMessageClick(message) {
+    //   this.markAsRead(message);
     // },
 
-    // ########################## Mark as Read #################################
-    // ########################## Mark as Read #################################
-    // ########################## Mark as Read #################################
-    markAsRead(message) {
-      const readActivity = {
-        type: "Read",
-        object: message.id,
-        context: [message.id],
-        bto: [], // Only the creator can see this object
-      };
-      this.$gf.post(readActivity);
-    },
-
-    onMessageClick(message) {
-      this.markAsRead(message);
-    },
-
-    isMessageRead(message) {
-      return this.readActivities.some(
-        (activity) => activity.object === message.id
-      );
-    },
+    // isMessageRead(message) {
+    //   return this.readActivities.some(
+    //     (activity) => activity.object === message.id
+    //   );
+    // },
 
     // ############################ End ############################
     // ############################ End ############################
@@ -620,6 +501,7 @@ const Name = {
   },
   template: "#name",
 };
+//############################ Like ##################################
 const Like = {
   props: ["messageid"],
 
@@ -664,8 +546,225 @@ const Like = {
   template: "#like",
 };
 
-app.components = { Name, Like };
+// ############## Read indicator #########################
+const Read = {
+  // props: ["messageid"],
+  props: ["messageid", "sender"],
 
-// app.components = { Name };
+  setup(props) {
+    const $gf = Vue.inject("graffiti");
+    const messageid = Vue.toRef(props, "messageid");
+    const { objects: readsRaw } = $gf.useObjects([messageid]);
+    return { readsRaw };
+  },
+
+  computed: {
+    reads() {
+      return this.readsRaw.filter(
+        (r) => r.type == "Read" && r.object == this.messageid
+      );
+    },
+
+    numReads() {
+      // Unique number of actors
+      return [...new Set(this.reads.map((r) => r.actor))].length;
+    },
+
+    myReads() {
+      return this.reads.filter((r) => r.actor == this.$gf.me);
+    },
+  },
+
+  methods: {
+    markAsRead() {
+      if (!this.myReads.length) {
+        this.$gf.post({
+          type: "Read",
+          object: this.messageid,
+          context: [this.messageid],
+          // bto: [], // only the creator can see this object
+        });
+      }
+    },
+  },
+
+  template: "#read",
+};
+
+//  ############ REPLY ###################
+const Reply = {
+  props: ["messageid", "content", "sender"],
+
+  data() {
+    return {
+      replyContent: "",
+      showReplyForm: false,
+    };
+  },
+
+  setup(props) {
+    const $gf = Vue.inject("graffiti");
+    const messageid = Vue.toRef(props, "messageid");
+    const { objects: repliesRaw } = $gf.useObjects([messageid]);
+    return { repliesRaw };
+  },
+
+  computed: {
+    replies() {
+      return this.repliesRaw.filter(
+        (r) => r.type == "Note" && r.inReplyTo == this.messageid
+      );
+    },
+    repliedMessageSnippet() {
+      return this.content.length > 30
+        ? this.content.substring(0, 30) + "..."
+        : this.content;
+    },
+  },
+
+  methods: {
+    sendReply() {
+      if (this.replyContent.trim()) {
+        this.$gf.post({
+          type: "Note",
+          content: this.replyContent,
+          inReplyTo: this.messageid,
+          context: [this.messageid],
+          to: [this.sender],
+        });
+        this.replyContent = "";
+        this.showReplyForm = false;
+      }
+    },
+  },
+
+  template: "#reply",
+};
+
+// ################### Profile Picture ##########################
+const ProfilePicture = {
+  props: ["actor", "editable"],
+  setup(props) {
+    const { actor } = Vue.toRefs(props);
+    const $gf = Vue.inject("graffiti");
+    return $gf.useObjects([actor]);
+  },
+  data() {
+    return {
+      editing: false,
+      selectedFile: null,
+    };
+  },
+  computed: {
+    profile() {
+      // Similar logic to the Name component for getting the profile
+    },
+  },
+  methods: {
+    async onSelectFile(event) {
+      this.selectedFile = event.target.files[0];
+      if (this.selectedFile) {
+        // Upload the file and get the magnet link
+        const magnetLink = await this.$gf.media.store(this.selectedFile);
+        this.saveProfilePicture(magnetLink);
+      }
+    },
+    async saveProfilePicture(magnetLink) {
+      if (this.profile && this.profile.icon) {
+        // If we already have a profile with an icon, update the magnet link
+        this.profile.icon.magnet = magnetLink;
+      } else {
+        // Otherwise, create a new profile with an icon
+        this.$gf.post({
+          type: "Profile",
+          icon: {
+            type: "Image",
+            magnet: magnetLink,
+          },
+        });
+      }
+      this.editing = false;
+    },
+    editProfilePicture() {
+      this.editing = true;
+    },
+  },
+  template: "#profile-picture",
+};
+
+// const ProfilePicture = {
+//   props: ["actor", "editable"],
+
+//   setup(props) {
+//     const { actor } = Vue.toRefs(props);
+//     const $gf = Vue.inject("graffiti");
+//     return $gf.useObjects([actor]);
+//   },
+
+//   computed: {
+//     profile() {
+//       return this.objects
+//         .filter(
+//           (m) =>
+//             m.type &&
+//             m.type == "Profile" &&
+//             m.icon &&
+//             m.icon.type == "Image" &&
+//             m.icon.magnet &&
+//             typeof m.icon.magnet == "string"
+//         )
+//         .reduce(
+//           (prev, curr) =>
+//             !prev || curr.published > prev.published ? curr : prev,
+//           null
+//         );
+//     },
+//   },
+
+//   data() {
+//     return {
+//       editing: false,
+//       newImage: null,
+//     };
+//   },
+
+//   methods: {
+//     async editPicture(event) {
+//       this.editing = true;
+//       this.newImage = event.target.files[0];
+//       const magnet = await this.$gf.media.store(this.newImage);
+//       this.savePicture(magnet);
+//     },
+
+//     async savePicture(magnet) {
+//       if (this.profile) {
+//         this.profile.icon.magnet = magnet;
+//       } else {
+//         this.$gf.post({
+//           type: "Profile",
+//           icon: {
+//             type: "Image",
+//             magnet: magnet,
+//           },
+//         });
+//       }
+
+//       this.editing = false;
+//     },
+
+//     async getProfilePictureSrc() {
+//       if (!this.profile) {
+//         return null;
+//       }
+
+//       const blob = await this.$gf.media.fetch(this.profile.icon.magnet);
+//       return URL.createObjectURL(blob);
+//     },
+//   },
+
+//   template: "#profile-picture",
+// };
+
+app.components = { Name, Like, Read, Reply, ProfilePicture };
 
 Vue.createApp(app).use(GraffitiPlugin(Vue)).mount("#app");

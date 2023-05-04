@@ -348,32 +348,6 @@ const app = {
       this.messageText = "";
     },
 
-    // ########################## Mark as Read #################################
-    // ########################## Mark as Read #################################
-    // ########################## Mark as Read #################################
-    // markAsRead(message) {
-    //   const readActivity = {
-    //     type: "Read",
-    //     object: message.id,
-    //     context: [message.id],
-    //     bto: [], // Only the creator can see this object
-    //   };
-    //   this.$gf.post(readActivity);
-    // },
-
-    // onMessageClick(message) {
-    //   this.markAsRead(message);
-    // },
-
-    // isMessageRead(message) {
-    //   return this.readActivities.some(
-    //     (activity) => activity.object === message.id
-    //   );
-    // },
-
-    // ############################ End ############################
-    // ############################ End ############################
-    // ############################ End ############################
     removeMessage(message) {
       this.$gf.remove(message);
     },
@@ -562,6 +536,69 @@ const Read = {
 };
 
 //  ############ REPLY ###################
+// const Reply = {
+//   props: ["messageid", "content", "sender"],
+
+//   data() {
+//     return {
+//       replyContent: "",
+//       showReplyForm: false,
+//     };
+//   },
+
+//   setup(props) {
+//     const $gf = Vue.inject("graffiti");
+//     const messageid = Vue.toRef(props, "messageid");
+//     const { objects: repliesRaw } = $gf.useObjects([messageid]);
+//     return { repliesRaw };
+//   },
+
+//   computed: {
+//     replies() {
+//       return this.repliesRaw.filter(
+//         (r) => r.type == "Note" && r.inReplyTo == this.messageid
+//       );
+//     },
+//     repliedMessageSnippet() {
+//       return this.content.length > 30
+//         ? this.content.substring(0, 30) + "..."
+//         : this.content;
+//     },
+//   },
+
+//   methods: {
+//     sendReply() {
+//       if (this.replyContent.trim()) {
+//         this.$gf.post({
+//           type: "Note",
+//           content: this.replyContent,
+//           inReplyTo: this.messageid,
+//           context: [this.messageid],
+//           to: [this.sender],
+//         });
+//         // alert(this.replyContent);
+//         this.replyContent = "";
+//         this.showReplyForm = false;
+//       }
+//     },
+//     removeReply(reply) {
+//       this.$gf.remove(reply);
+//     },
+//     startEditReply(reply) {
+//       this.editingReply = reply;
+//       this.editText = reply.content;
+//     },
+//     saveEditReply() {
+//       if (this.editText.trim()) {
+//         this.editingReply.content = this.editText;
+//         this.$gf.update(this.editingReply);
+//         this.editingReply = null;
+//       }
+//     },
+//   },
+
+//   template: "#reply",
+// };
 const Reply = {
   props: ["messageid", "content", "sender"],
 
@@ -569,6 +606,9 @@ const Reply = {
     return {
       replyContent: "",
       showReplyForm: false,
+      replyingToReply: null,
+      editingReply: null,
+      editText: "",
     };
   },
 
@@ -595,15 +635,43 @@ const Reply = {
   methods: {
     sendReply() {
       if (this.replyContent.trim()) {
+        const inReplyTo = this.replyingToReply
+          ? this.replyingToReply.id
+          : this.messageid;
         this.$gf.post({
           type: "Note",
           content: this.replyContent,
-          inReplyTo: this.messageid,
+          inReplyTo: inReplyTo,
           context: [this.messageid],
           to: [this.sender],
         });
         this.replyContent = "";
         this.showReplyForm = false;
+        this.replyingToReply = null;
+      }
+    },
+    // startReplyToReply(reply) {
+    //   replyContent = this.sendReply();
+    //   this.replyingToReply = reply;
+    //   this.showReplyForm = true;
+    // },
+    startReplyToReply(reply) {
+      this.replyingToReply = reply;
+      this.showReplyForm = true;
+    },
+
+    removeReply(reply) {
+      this.$gf.remove(reply);
+    },
+    startEditReply(reply) {
+      this.editingReply = reply;
+      this.editText = reply.content;
+    },
+    saveEditReply() {
+      if (this.editText.trim()) {
+        this.editingReply.content = this.editText;
+        this.$gf.update(this.editingReply);
+        this.editingReply = null;
       }
     },
   },

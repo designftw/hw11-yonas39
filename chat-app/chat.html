@@ -334,9 +334,6 @@
             </li>
           </ul>
 
-          <!-- ################### Read indicator ########################### -->
-          <!-- ################### Read indicator ########################### -->
-
           <!-- ############### Send message ##############################-->
           <!-- ############### Send message ##############################-->
           <div class="message-send-button">
@@ -440,7 +437,7 @@
     </template>
 
     <!-- ############# REPLY Template ################# -->
-    <template id="reply">
+    <!-- <template id="reply">
       <div class="reply-container">
         <button @click="showReplyForm = !showReplyForm">Reply</button>
         <div v-if="showReplyForm" class="reply-form">
@@ -454,6 +451,57 @@
             placeholder="Write a reply..."
           />
           <button @click="sendReply">Send</button>
+        </div>
+        <div class="replies">
+          <div v-for="reply in replies" class="reply-message">
+            {{ reply.content }}
+          </div>
+        </div>
+      </div>
+    </template> -->
+    <template id="reply">
+      <div class="reply-container">
+        <button @click="showReplyForm = !showReplyForm">Reply</button>
+        <div v-if="showReplyForm" class="reply-form">
+          <div class="quoted-message">
+            <span>Replying to:</span>
+            <span
+              >{{ replyingToReply ? replyingToReply.content :
+              repliedMessageSnippet }}</span
+            >
+          </div>
+          <input
+            type="text"
+            v-model="replyContent"
+            placeholder="Write a reply..."
+          />
+          <button @click="sendReply">Send</button>
+        </div>
+        <div class="replies">
+          <div v-for="reply in replies" class="reply-message">
+            <div class="quoted-message">
+              <span>Replying to:</span>
+              <span>{{ repliedMessageSnippet }}</span>
+            </div>
+            <span v-if="editingReply === reply">
+              <input v-model="editText" />
+              <button @click="saveEditReply">Save</button>
+            </span>
+            <span v-else>
+              {{ reply.content }}
+              <template v-if="reply.actor==$gf.me">
+                <button @click="removeReply(reply)">Delete</button>
+                <button @click="startEditReply(reply)">Edit</button>
+              </template>
+              <button @click="startReplyToReply(reply)">Reply</button>
+            </span>
+            <reply
+              v-if="reply.inReplyTo"
+              :messageid="reply.id"
+              :content="reply.content"
+              :sender="reply.sender"
+            ></reply>
+          </div>
         </div>
       </div>
     </template>

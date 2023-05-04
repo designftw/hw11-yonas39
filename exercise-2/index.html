@@ -4,7 +4,56 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Excercise-2</title>
+    <title>
+      Exercise 2: Beginning to add Prototype Functionality using JS for
+      Chat/Messaging App
+    </title>
+    <link rel="stylesheet" href="writeup.css" />
   </head>
-  <body></body>
+  <body>
+    <h1>
+      Exercise 2: Beginning to add Prototype Functionality using JS for
+      Chat/Messaging App
+    </h1>
+    <article>
+      <ul>
+        <li>
+          <strong> Read Indicators:</strong> For the read indicators feature, I
+          will add a new activity type called 'Read' with the id of the message
+          being read and the context of the message. I will use "read" to
+          indicate message is read by the reciever. In additon, it will also
+          show the number of times the message is seen. By default, all read
+          indicators will be public unless the creator specifies otherwise. I
+          will also design a way to display read indicators to appropriate
+          users, so they can tell which messages have been read.
+        </li>
+        <li>
+          <strong>Replies:</strong> For the replies feature, I will modify the
+          existing Like data model and UI to allow users to add text to input. I
+          will create a new reply object similar to the 'Note' object used for
+          messages, but with an extra field 'inReplyTo' containing the id of the
+          message being replied to. I will also design a way to display replies
+          in their own thread or as a snippet of the replied-to message in a
+          single-threaded conversation.
+        </li>
+        <li>
+          <strong> Media: </strong>For the media feature, I will allow users to
+          add a profile picture to their account and display the profile
+          pictures of other users. I will create a new Profile object with an
+          'icon' field that contains a magnet link of the uploaded image. Users
+          will upload their image using a File selector, then I will call
+          $gf.media.store on the uploaded file and await the result, which is a
+          magnet link. I will post a JSON object containing the magnet link
+          using $gf.post and associate the link with the profile using an
+          appropriate ActivityPub property like 'image'. To display a profile
+          picture, I will retrieve a Graffiti user profile object that
+          references an image magnet link, call $gf.media.fetch on the magnet
+          link and await the result, which is a Blob. I will then create a local
+          URL for that blob with createObjectURL and display the file by
+          assigning the src property of an appropriate tag like "<img />" to the
+          local URL It generated.
+        </li>
+      </ul>
+    </article>
+  </body>
 </html>

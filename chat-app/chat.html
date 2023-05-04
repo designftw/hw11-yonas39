@@ -152,7 +152,7 @@
         <div class="notification">New message received!</div>
 
         <!--  -->
-        <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ -->
+
         <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ -->
         <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ -->
         <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ -->
@@ -332,10 +332,9 @@
                 class="submit-text-box"
                 v-model="messageText"
                 placeholder="Type a message..."
-                @focus="handleInputFocus"
-                @blur="handleInputBlur"
               />
-
+              <!-- @focus="handleInputFocus"
+              @blur="handleInputBlur" -->
               <!-- ############## Sending Media in Chat ############-->
               <input type="file" accept="image/*" @change="onImageAttachment" />
               <!--####### typing Indicator ####### -->

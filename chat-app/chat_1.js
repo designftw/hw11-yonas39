@@ -31,8 +31,9 @@ const app = {
     // return { channel, privateMessaging, messagesRaw }; // Commented to test the code below
 
     // ############### Read Activity ####################
-    const { objects: readActivities } = $gf.useObjects(context);
-    return { channel, privateMessaging, messagesRaw, readActivities };
+    // const { objects: readActivities } = $gf.useObjects(context);
+    // return { channel, privateMessaging, messagesRaw, readActivities };
+    return { channel, privateMessaging, messagesRaw };
   },
 
   data() {
@@ -57,11 +58,13 @@ const app = {
       searchLoading: false, // I added this
       searchedUsername: "", // I added this
       recipientUsername: "", // I added this
+
       // problem-3
       myUsername: "", // I added this
-      actorToUsername: {}, //I added this
+      // actorToUsername: {}, //I added this
+      actorsToUsernames: {}, //I added this
       //Sending Media in Chat
-      // file: null, // I added this
+      file: null, // I added this
       downloadedImages: {}, // I added this
 
       // Need to double check the line below this
@@ -88,15 +91,14 @@ const app = {
 
     async messages(messages) {
       for (const m of messages) {
-        if (!(m.actor in this.actorToUsername)) {
-          this.actorToUsername[m.actor] = await this.resolver.actorToUsername(
+        if (!(m.actor in this.actorsToUsernames)) {
+          this.actorsToUsernames[m.actor] = await this.resolver.actorToUsername(
             m.actor
           );
         }
-        if (m.bto && m.bto.length && !(m.bto[0] in this.actorToUsername)) {
-          this.actorToUsername[m.bto[0]] = await this.resolver.actorToUsername(
-            m.bto[0]
-          );
+        if (m.bto && m.bto.length && !(m.bto[0] in this.actorsToUsernames)) {
+          this.actorsToUsernames[m.bto[0]] =
+            await this.resolver.actorToUsername(m.bto[0]);
         }
       }
     },
@@ -134,7 +136,8 @@ const app = {
             // Is the value of that property 'Note'?
             m.type == "Note" &&
             // Does the message have a content property?
-            m.content &&
+            // m.content &&
+            (m.content || m.content == "") &&
             // Is that property a string?
             typeof m.content == "string"
         );
@@ -164,7 +167,8 @@ const app = {
       );
     },
 
-    // ################ Sending media in chat (watch) ###########
+    // ################ Sending media in chat ###########
+    // ################ Sending media in chat ###########
     messagesWithAttachments() {
       return this.messages.filter(
         (m) =>
@@ -173,6 +177,7 @@ const app = {
           typeof m.attachment.magnet == "string"
       );
     },
+
     // ########################## filteredUsernames #################################
     // ########################## filteredUsernames #################################
 
@@ -199,7 +204,7 @@ const app = {
     // ###### media END ############
 
     // ######### ... Typing  ############
-    hadleInputFocus() {
+    handleInputFocus() {
       this.isTyping = true;
     },
     handleInputBlur() {
@@ -269,48 +274,6 @@ const app = {
         }, 2000);
       }
     },
-    // requestUsername() {
-    //   if (!this.requestedUsername) {
-    //     this.usernameError =
-    //       "Username Can not be Empty! Plase type a username.";
-    //     setTimeout(() => {
-    //       this.usernameError = "";
-    //     }, 2000);
-    //     return;
-    //   }
-    //   // call the appropriate resolver functiont to request username
-    //   this.resolver
-    //     .requestUsername(this.requestedUsername)
-    //     .then((response) => {
-    //       if (response === "success") {
-    //         // clear the Username input and error message
-    //         this.requestedUsername = "";
-    //         this.usernameError = "";
-
-    //         // display a text that the request succeded and disapear after a 1 sec ..
-    //         // alert("username Successful!");
-    //         this.usernameSuccess =
-    //           "Congratulations! Your username request has been approved.";
-    //         setTimeout(() => {
-    //           this.usernameSuccess = "";
-    //         }, 2000);
-    //       } else {
-    //         this.usernameError =
-    //           "The User is name is taken. Please try another one!";
-    //         setTimeout(() => {
-    //           this.usernameError = "";
-    //         }, 2000);
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       // handles any other error that might occur
-    //       this.usernameError =
-    //         "An error occurred while requesting the username! Please try again.";
-    //       setTimeout(() => {
-    //         this.usernameError = "";
-    //       }, 2000);
-    //     });
-    // },
 
     // ########################## Search by Username #################################
     // ########################## Search by Username #################################
@@ -353,11 +316,17 @@ const app = {
         content: this.messageText,
       };
 
+      if (!this.messageText.trim() && !this.file) {
+        this.errorMessage = "Empty message !";
+        return;
+      }
+
       if (this.file) {
         message.attachment = {
           type: "Image",
           magnet: await this.$gf.media.store(this.file),
         };
+        this.messageText = "";
         this.file = null;
       }
 
@@ -375,6 +344,7 @@ const app = {
       // Send!
       this.$gf.post(message);
 
+      this.file = null;
       this.messageText = "";
     },
 
@@ -657,7 +627,28 @@ const ProfilePicture = {
   },
   computed: {
     profile() {
-      // Similar logic to the Name component for getting the profile
+      return (
+        this.objects
+          // Filter the raw objects for profile data
+          // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-profile
+          .filter(
+            (m) =>
+              // Does the message have a type property?
+              m.type &&
+              // Is the value of that property 'Profile'?
+              m.type == "Profile" &&
+              // Does the message have a name property?
+              m.name &&
+              // Is that property a string?
+              typeof m.name == "string"
+          )
+          // Choose the most recent one or null if none exists
+          .reduce(
+            (prev, curr) =>
+              !prev || curr.published > prev.published ? curr : prev,
+            null
+          )
+      );
     },
   },
   methods: {
@@ -691,79 +682,6 @@ const ProfilePicture = {
   },
   template: "#profile-picture",
 };
-
-// const ProfilePicture = {
-//   props: ["actor", "editable"],
-
-//   setup(props) {
-//     const { actor } = Vue.toRefs(props);
-//     const $gf = Vue.inject("graffiti");
-//     return $gf.useObjects([actor]);
-//   },
-
-//   computed: {
-//     profile() {
-//       return this.objects
-//         .filter(
-//           (m) =>
-//             m.type &&
-//             m.type == "Profile" &&
-//             m.icon &&
-//             m.icon.type == "Image" &&
-//             m.icon.magnet &&
-//             typeof m.icon.magnet == "string"
-//         )
-//         .reduce(
-//           (prev, curr) =>
-//             !prev || curr.published > prev.published ? curr : prev,
-//           null
-//         );
-//     },
-//   },
-
-//   data() {
-//     return {
-//       editing: false,
-//       newImage: null,
-//     };
-//   },
-
-//   methods: {
-//     async editPicture(event) {
-//       this.editing = true;
-//       this.newImage = event.target.files[0];
-//       const magnet = await this.$gf.media.store(this.newImage);
-//       this.savePicture(magnet);
-//     },
-
-//     async savePicture(magnet) {
-//       if (this.profile) {
-//         this.profile.icon.magnet = magnet;
-//       } else {
-//         this.$gf.post({
-//           type: "Profile",
-//           icon: {
-//             type: "Image",
-//             magnet: magnet,
-//           },
-//         });
-//       }
-
-//       this.editing = false;
-//     },
-
-//     async getProfilePictureSrc() {
-//       if (!this.profile) {
-//         return null;
-//       }
-
-//       const blob = await this.$gf.media.fetch(this.profile.icon.magnet);
-//       return URL.createObjectURL(blob);
-//     },
-//   },
-
-//   template: "#profile-picture",
-// };
 
 app.components = { Name, Like, Read, Reply, ProfilePicture };
 

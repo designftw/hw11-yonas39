@@ -451,9 +451,11 @@
     <!-- ############# READ Template ################# -->
     <template id="read">
       <div>
-        <span v-if="sender === $gf.me && myReads.length">✓✓</span>
+        <span class="read-indicator" v-if="sender === $gf.me && myReads.length"
+          >✓✓</span
+        >
       </div>
-      <div v-if="sender !== $gf.me">
+      <div class="read-indicator" v-if="sender !== $gf.me">
         ✓✓
         <!-- read by: {{ numReads }} -->
       </div>

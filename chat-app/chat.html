@@ -11,13 +11,12 @@
     <script type="module" src="chat_1.js"></script>
   </head>
   <body>
+    <!-- ############### Title #################################-->
+    <!-- ############### Title #################################-->
+    <h1>Let's Chat</h1>
     <!-- ############### App #################################-->
     <!-- ############### App #################################-->
     <div id="app">
-      <!-- ############### Title #################################-->
-      <!-- ############### Title #################################-->
-      <h1>Let's Chat</h1>
-
       <!-- Begin problem 3 solution -->
       <!-- <h2>Welcome {{myUsername}}</h2> -->
       <!-- End problem 3 solution -->
@@ -37,34 +36,20 @@
       <!-- If we're not logged in, hide everything except the login button -->
 
       <template v-if="$gf.me">
-        <!-- ############### request-username" ##############################-->
-        <!-- ############### request-username" ##############################-->
-        <!-- ############### request-username" ##############################-->
-        <div class="request-username">
-          <!-- <p></p> -->
-          <form @submit.prevent="setUsername">
-            <input
-              v-model="preferredUsername"
-              placeholder="Choose a username..."
-            />
-            <input type="submit" value="Set Username" />
-          </form>
-          {{ usernameResult }}
-        </div>
         <!-- ############### My Name is ##############################-->
         <!-- ############### My Name is ##############################-->
-        <p>
-          <!-- We display names in multiple places, so we made a -->
-          <!-- reusable <name></name> component. -->
-          <!-- See below for the template. -->
-          My Name Is: <name :actor="$gf.me" :editable="true"></name>
+        <!-- <p> -->
+        <!-- We display names in multiple places, so we made a -->
+        <!-- reusable <name></name> component. -->
+        <!-- See below for the template. -->
+        <!-- My Name Is: <name :actor="$gf.me" :editable="true"></name> -->
 
-          <!-- ############### ProfilePicture ##############################-->
-          <!-- ############### ProfilePicture ##############################-->
-          My Profile Picture:
-          <profile-picture :actor="$gf.me" :editable="true"></profile-picture>
-          <!-- <profile-picture :actor="$gf.me" :editable="true"></profile-picture> -->
-        </p>
+        <!-- ############### ProfilePicture ##############################-->
+        <!-- ############### ProfilePicture ##############################-->
+        <!-- My Profile Picture:
+          <profile-picture :actor="$gf.me" :editable="true"></profile-picture> -->
+        <!-- <profile-picture :actor="$gf.me" :editable="true"></profile-picture> -->
+        <!-- </p> -->
         <!-- ############### Chat format PUBLIC / PRIVATE ##############################-->
         <!-- ############### Chat format PUBLIC / PRIVATE ##############################-->
         <!-- ############### Chat format PUBLIC / PRIVATE ##############################-->
@@ -74,8 +59,7 @@
             <span class="slider round"></span>
           </label>
           <span class="toggle-label">
-            Chat Mode: {{ privateMessaging ? 'Private Chat' : 'Public Chat'
-            }}</span
+            Chat Mode: {{ privateMessaging ? 'Private' : 'Public' }}</span
           >
         </div>
         <!-- <p>
@@ -88,15 +72,15 @@
         </p> -->
         <!-- ############### Change the channel you're chatting in: #################################-->
         <!-- ############### Change the channel you're chatting in: #################################-->
-        <p v-if="!privateMessaging">
+        <!-- <p v-if="!privateMessaging">
           <label for="channel"> Change the channel you're chatting in: </label>
           <input id="channel" v-model="channel" />
-        </p>
+        </p> -->
         <!-- ############### Display Name #################################-->
         <!-- ############### Display Name #################################-->
         <div>
           <profile-picture
-            class="profile-image"
+            class="profile-name"
             :actor="$gf.me"
             :editable="true"
           ></profile-picture>
@@ -117,7 +101,19 @@
           </p> -->
           Welcome : {{myUsername}}
         </div>
-
+        <!-- ############### request-username" ##############################-->
+        <!-- ############### request-username" ##############################-->
+        <!-- ############### request-username" ##############################-->
+        <div class="request-username">
+          <form @submit.prevent="setUsername">
+            <input
+              v-model="preferredUsername"
+              placeholder="Choose a username..."
+            />
+            <input type="submit" value="Change Username" />
+          </form>
+          {{ usernameResult }}
+        </div>
         <!-- ############### NEW MeSsage recieved #################################-->
         <!-- ############### NEW MeSsage recieved #################################-->
         <!-- ############ NEW MeSsage recieved ######### -->
@@ -141,10 +137,10 @@
         <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ -->
         <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ -->
 
-        <!-- <p v-if="!privateMessaging" class="channel-base">
+        <p v-if="!privateMessaging" class="channel-base">
           <label for="channel"> Change the channel you're chatting in: </label>
           <input id="channel" v-model="channel" />
-        </p> -->
+        </p>
 
         <!-- ############### Search by username  ##############################-->
         <!-- ############### Search by username  ##############################-->
@@ -213,9 +209,18 @@
                     src="image_1222.png"
                     alt="User profile image"
                   /> -->
+                  <!-- <profile-picture
+                    :actor="message.actor"
+                    :editable="false"
+                  ></profile-picture> -->
+
                   <span v-if="!privateMessaging"
+                    ><li>From: {{ actorsToUsernames[message.actor] }}</li></span
+                  >
+
+                  <!-- <span v-if="!privateMessaging"
                     >From: <name :actor="message.actor"></name
-                  ></span>
+                  ></span> -->
                   <span v-else>To :<name :actor="message.bto[0]"></name> </span>
                   <!-- <span v-if="!privateMessaging"
                     >From: {{myUsername}}</span>-->
@@ -529,7 +534,7 @@
       <div>
         <img class="profile-image" v-if="localImageUrl" :src="localImageUrl" />
         <button v-if="editable" @click="editProfilePicture">
-          ...
+          Change Profile Pic
         </button>
       </div>
     </script>

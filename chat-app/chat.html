@@ -58,6 +58,12 @@
           <!-- reusable <name></name> component. -->
           <!-- See below for the template. -->
           My Name Is: <name :actor="$gf.me" :editable="true"></name>
+
+          <!-- ############### ProfilePicture ##############################-->
+          <!-- ############### ProfilePicture ##############################-->
+          My Profile Picture:
+          <profile-picture :actor="$gf.me" :editable="true"></profile-picture>
+          <!-- <profile-picture :actor="$gf.me" :editable="true"></profile-picture> -->
         </p>
         <!-- ############### Chat format PUBLIC / PRIVATE ##############################-->
         <!-- ############### Chat format PUBLIC / PRIVATE ##############################-->
@@ -89,11 +95,16 @@
         <!-- ############### Display Name #################################-->
         <!-- ############### Display Name #################################-->
         <div>
-          <img
+          <profile-picture
+            class="profile-image"
+            :actor="$gf.me"
+            :editable="true"
+          ></profile-picture>
+          <!-- <img
             class="profile-image"
             src="image_1222.png"
             alt="User profile image"
-          />
+          /> -->
           <!-- <ProfilePicture :actor="$gf.me" editable="true"></ProfilePicture> -->
           <!-- <ProfilePicture :actor="actor.ID"></ProfilePicture> -->
         </div>
@@ -191,11 +202,17 @@
                 v-else
               >
                 <div class="message-header">
-                  <img
+                  <!-- <profile-picture
+                    class="message-avatar"
+                    :actor="$gf.me"
+                    :editable="true"
+                  ></profile-picture> -->
+
+                  <!-- <img
                     class="message-avatar"
                     src="image_1222.png"
                     alt="User profile image"
-                  />
+                  /> -->
                   <span v-if="!privateMessaging"
                     >From: <name :actor="message.actor"></name
                   ></span>
@@ -271,6 +288,7 @@
                     Image could not be downloaded!
                   </span>
                   <img
+                    style="width: 100%"
                     v-else
                     :src="downloadedImages[message.attachment.magnet]"
                   />
@@ -431,8 +449,8 @@
         <span v-if="sender === $gf.me && myReads.length">✓✓</span>
       </div>
       <div v-if="sender !== $gf.me">
-        <!-- ✓✓ -->
-        read by: {{ numReads }}
+        ✓✓
+        <!-- read by: {{ numReads }} -->
       </div>
     </template>
 
@@ -506,7 +524,37 @@
       </div>
     </template>
 
-    <!-- Profile picture -->
+    <!--############### Profile picture #################### -->
+    <script type="text/x-template" id="profile-picture">
+      <div>
+        <img class="profile-image" v-if="localImageUrl" :src="localImageUrl" />
+        <button v-if="editable" @click="editProfilePicture">
+          ...
+        </button>
+      </div>
+    </script>
+
+    <!-- <script type="text/x-template" id="profile-picture">
+      <div>
+        <img v-if="profile" :src="getImageURL(profile.icon.magnet)" />
+        <input v-if="editable" type="file" @change="editProfilePicture" />
+      </div>
+    </script> -->
+
+    <!-- <script type="text/x-template" id="profile-picture">
+      <div>
+        <img v-if="imageURL" :src="imageURL" class="profile-picture" />
+        <div v-else class="no-profile-picture">No profile picture</div>
+        <input
+          v-if="editable"
+          type="file"
+          accept="image/*"
+          @change="uploadPicture"
+          class="upload-picture-input"
+        />
+      </div>
+    </script> -->
+
     <!-- <script type="text/x-template" id="profile-picture">
       <div class="profile-picture">
         <div v-if="profile && profile.icon">

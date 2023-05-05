@@ -680,76 +680,288 @@ const Reply = {
 };
 
 // ################### Profile Picture ##########################
+// const ProfilePicture = {
+//   props: ["actor", "editable"],
+
+//   setup(props) {
+//     const { actor } = Vue.toRefs(props);
+//     const $gf = Vue.inject("graffiti");
+//     return $gf.useObjects([actor]);
+//   },
+
+//   computed: {
+//     profile() {
+//       return this.objects
+//         .filter(
+//           (m) =>
+//             m.type &&
+//             m.type == "Profile" &&
+//             m.icon &&
+//             m.icon.type == "Image" &&
+//             m.icon.magnet
+//         )
+//         .reduce(
+//           (prev, curr) =>
+//             !prev || curr.published > prev.published ? curr : prev,
+//           null
+//         );
+//     },
+//   },
+
+//   data() {
+//     return {
+//       editing: false,
+//       file: null,
+//     };
+//   },
+
+//   methods: {
+//     async editProfilePicture(event) {
+//       this.editing = true;
+//       this.file = event.target.files[0];
+//       const magnet = await this.$gf.media.store(this.file);
+//       if (this.profile) {
+//         this.profile.icon.magnet = magnet;
+//       } else {
+//         this.$gf.post({
+//           type: "Profile",
+//           icon: {
+//             type: "Image",
+//             magnet: magnet,
+//           },
+//         });
+//       }
+//       this.editing = false;
+//     },
+
+//     async getImageURL(magnet) {
+//       const blob = await this.$gf.media.fetch(magnet);
+//       return URL.createObjectURL(blob);
+//     },
+//   },
+
+//   template: "#profile-picture",
+// };
 const ProfilePicture = {
   props: ["actor", "editable"],
+
   setup(props) {
     const { actor } = Vue.toRefs(props);
     const $gf = Vue.inject("graffiti");
     return $gf.useObjects([actor]);
   },
+
+  computed: {
+    profile() {
+      return this.objects
+        .filter(
+          (m) =>
+            m.type &&
+            m.type == "Profile" &&
+            m.image &&
+            m.image.type == "Image" &&
+            m.image.magnet
+        )
+        .reduce(
+          (prev, curr) =>
+            !prev || curr.published > prev.published ? curr : prev,
+          null
+        );
+    },
+  },
+
   data() {
     return {
       editing: false,
-      selectedFile: null,
+      fileInput: null,
+      localImageUrl: null,
     };
   },
-  computed: {
-    profile() {
-      return (
-        this.objects
-          // Filter the raw objects for profile data
-          // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-profile
-          .filter(
-            (m) =>
-              // Does the message have a type property?
-              m.type &&
-              // Is the value of that property 'Profile'?
-              m.type == "Profile" &&
-              // Does the message have a name property?
-              m.name &&
-              // Is that property a string?
-              typeof m.name == "string"
-          )
-          // Choose the most recent one or null if none exists
-          .reduce(
-            (prev, curr) =>
-              !prev || curr.published > prev.published ? curr : prev,
-            null
-          )
-      );
-    },
-  },
-  methods: {
-    async onSelectFile(event) {
-      this.selectedFile = event.target.files[0];
-      if (this.selectedFile) {
-        // Upload the file and get the magnet link
-        const magnetLink = await this.$gf.media.store(this.selectedFile);
-        this.saveProfilePicture(magnetLink);
+
+  watch: {
+    async profile(newProfile, oldProfile) {
+      if (newProfile && newProfile.image && newProfile.image.magnet) {
+        const imageBlob = await this.$gf.media.fetch(newProfile.image.magnet);
+        this.localImageUrl = URL.createObjectURL(imageBlob);
+      } else {
+        this.localImageUrl = null;
       }
     },
-    async saveProfilePicture(magnetLink) {
-      if (this.profile && this.profile.icon) {
-        // If we already have a profile with an icon, update the magnet link
-        this.profile.icon.magnet = magnetLink;
+  },
+
+  methods: {
+    async editProfilePicture() {
+      this.editing = true;
+      this.fileInput = document.createElement("input");
+      this.fileInput.type = "file";
+      this.fileInput.accept = "image/*";
+      this.fileInput.addEventListener("change", this.saveProfilePicture);
+      this.fileInput.click();
+    },
+
+    async saveProfilePicture() {
+      const file = this.fileInput.files[0];
+      const magnet = await this.$gf.media.store(file);
+      if (this.profile) {
+        this.profile.image = { type: "Image", magnet: magnet };
       } else {
-        // Otherwise, create a new profile with an icon
         this.$gf.post({
           type: "Profile",
-          icon: {
+          image: {
             type: "Image",
-            magnet: magnetLink,
+            magnet: magnet,
           },
         });
       }
       this.editing = false;
     },
-    editProfilePicture() {
-      this.editing = true;
-    },
   },
+
   template: "#profile-picture",
 };
+
+// const ProfilePicture = {
+//   props: ["actor", "editable"],
+
+//   setup(props) {
+//     const { actor } = Vue.toRefs(props);
+//     const $gf = Vue.inject("graffiti");
+//     return $gf.useObjects([actor]);
+//   },
+
+//   computed: {
+//     profile() {
+//       return this.objects
+//         .filter(
+//           (m) =>
+//             m.type &&
+//             m.type == "Profile" &&
+//             m.icon &&
+//             m.icon.type == "Image" &&
+//             m.icon.magnet &&
+//             typeof m.icon.magnet == "string"
+//         )
+//         .reduce(
+//           (prev, curr) =>
+//             !prev || curr.published > prev.published ? curr : prev,
+//           null
+//         );
+//     },
+//   },
+
+//   data() {
+//     return {
+//       editing: false,
+//       imageURL: "",
+//     };
+//   },
+
+//   watch: {
+//     profile: {
+//       immediate: true,
+//       async handler(newProfile) {
+//         if (newProfile && newProfile.icon.magnet) {
+//           const $gf = Vue.inject("graffiti");
+//           const blob = await $gf.media.fetch(newProfile.icon.magnet);
+//           this.imageURL = URL.createObjectURL(blob);
+//         }
+//       },
+//     },
+//   },
+
+//   methods: {
+//     async uploadPicture(event) {
+//       const file = event.target.files[0];
+//       const $gf = Vue.inject("graffiti");
+//       const magnet = await $gf.media.store(file);
+
+//       if (this.profile) {
+//         this.profile.icon.magnet = magnet;
+//       } else {
+//         this.$gf.post({
+//           type: "Profile",
+//           icon: {
+//             type: "Image",
+//             magnet,
+//           },
+//         });
+//       }
+//     },
+//   },
+
+//   template: "#profile-picture",
+// };
+
+// const ProfilePicture = {
+//   props: ["actor", "editable"],
+//   setup(props) {
+//     const { actor } = Vue.toRefs(props);
+//     const $gf = Vue.inject("graffiti");
+//     return $gf.useObjects([actor]);
+//   },
+//   data() {
+//     return {
+//       editing: false,
+//       selectedFile: null,
+//     };
+//   },
+//   computed: {
+//     profile() {
+//       return (
+//         this.objects
+//           // Filter the raw objects for profile data
+//           // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-profile
+//           .filter(
+//             (m) =>
+//               // Does the message have a type property?
+//               m.type &&
+//               // Is the value of that property 'Profile'?
+//               m.type == "Profile" &&
+//               // Does the message have a name property?
+//               m.name &&
+//               // Is that property a string?
+//               typeof m.name == "string"
+//           )
+//           // Choose the most recent one or null if none exists
+//           .reduce(
+//             (prev, curr) =>
+//               !prev || curr.published > prev.published ? curr : prev,
+//             null
+//           )
+//       );
+//     },
+//   },
+//   methods: {
+//     async onSelectFile(event) {
+//       this.selectedFile = event.target.files[0];
+//       if (this.selectedFile) {
+//         // Upload the file and get the magnet link
+//         const magnetLink = await this.$gf.media.store(this.selectedFile);
+//         this.saveProfilePicture(magnetLink);
+//       }
+//     },
+//     async saveProfilePicture(magnetLink) {
+//       if (this.profile && this.profile.icon) {
+//         // If we already have a profile with an icon, update the magnet link
+//         this.profile.icon.magnet = magnetLink;
+//       } else {
+//         // Otherwise, create a new profile with an icon
+//         this.$gf.post({
+//           type: "Profile",
+//           icon: {
+//             type: "Image",
+//             magnet: magnetLink,
+//           },
+//         });
+//       }
+//       this.editing = false;
+//     },
+//     editProfilePicture() {
+//       this.editing = true;
+//     },
+//   },
+//   template: "#profile-picture",
+// };
 
 app.components = { Name, Like, Read, Reply, ProfilePicture };
 

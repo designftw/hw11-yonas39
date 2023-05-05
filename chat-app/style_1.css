@@ -186,14 +186,14 @@ input[type="submit"]:hover {
 }
 
 /* ###### profile Image and Name */
-.profile-image,
-.message-avatar {
+.profile-image {
   width: 10em;
   height: 10em;
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 0.75em;
 }
+/* .message-avatar  */
 .profile-image {
   display: block;
   margin: 0 auto;

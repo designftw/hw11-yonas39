@@ -367,7 +367,7 @@ button:hover {
   }
 
   #app {
-    background-color: beige;
+    background-color: rgb(197, 235, 207);
     box-shadow: black solid 0.3em;
     margin: 0;
     width: 100%;

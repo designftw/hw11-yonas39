@@ -2,7 +2,7 @@ import * as Vue from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
 import { mixin } from "https://mavue.mavo.io/mavue.js";
 import GraffitiPlugin from "https://graffiti.garden/graffiti-js/plugins/vue/plugin.js";
 import Resolver from "./resolver.js";
-
+const API_KEY = "AIzaSyA3jLJjBvwVZXPfHJo7BIV2RXYFpfCkH48";
 const app = {
   // Import MaVue
   mixins: [mixin],
@@ -81,6 +81,14 @@ const app = {
       privateMessages: {}, // I added this
 
       isTyping: false, // I added this
+
+      textToTranslate: "",
+      targetLanguage: "en",
+      translatedText: "",
+
+      // messages: [],
+      // targetLanguage: 'en',
+      translatedMessages: {},
     };
   },
   // ################ Sending media in chat (watch) ###########
@@ -119,9 +127,30 @@ const app = {
         }
       }
     },
+
+    targetLanguage() {
+      this.translateAllMessages();
+    },
+    messages: {
+      deep: true,
+      handler() {
+        this.translateAllMessages();
+      },
+    },
   },
 
   computed: {
+    // async translatedMessages() {
+    //   const translatedMessages = {};
+
+    //   for (const message of this.messages) {
+    //     translatedMessages[message.id] = await this.translateMessage(
+    //       message.content
+    //     );
+    //   }
+
+    //   return translatedMessages;
+    // },
     // ########################## Messages #################################
     // ########################## Messages #################################
     messages() {
@@ -196,6 +225,79 @@ const app = {
   },
 
   methods: {
+    // async translate() {
+    //   if (!this.textToTranslate) {
+    //     alert("Please enter text to translate.");
+    //     return;
+    //   }
+
+    //   try {
+    //     const response = await axios.post(
+    //       `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`,
+    //       {
+    //         q: this.textToTranslate,
+    //         target: this.targetLanguage,
+    //       }
+    //     );
+
+    //     if (
+    //       response.data &&
+    //       response.data.data &&
+    //       response.data.data.translations &&
+    //       response.data.data.translations.length > 0
+    //     ) {
+    //       this.translatedText =
+    //         response.data.data.translations[0].translatedText;
+    //     } else {
+    //       alert("Translation failed. Please try again.");
+    //     }
+    //   } catch (error) {
+    //     console.error("Error while translating:", error);
+    //     alert("Translation failed. Please try again.");
+    //   }
+    // },
+    async translateMessage(messageContent) {
+      if (!messageContent) {
+        return messageContent;
+      }
+
+      if (this.targetLanguage === "en") {
+        return messageContent;
+      }
+
+      try {
+        const response = await axios.post(
+          `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`,
+          {
+            q: messageContent,
+            target: this.targetLanguage,
+          }
+        );
+
+        if (
+          response.data &&
+          response.data.data &&
+          response.data.data.translations &&
+          response.data.data.translations.length > 0
+        ) {
+          return response.data.data.translations[0].translatedText;
+        } else {
+          console.error("Translation failed. Please try again.");
+          return messageContent;
+        }
+      } catch (error) {
+        console.error("Error while translating:", error);
+        return messageContent;
+      }
+    },
+    async translateAllMessages() {
+      for (const message of this.messages) {
+        this.translatedMessages[message.id] = await this.translateMessage(
+          message.content
+        );
+      }
+    },
+
     // ########## Sending media in chat ###############
     onImageAttachment(event) {
       const file = event.target.files[0];
@@ -366,6 +468,11 @@ const app = {
       // And clear the edit mark
       this.editID = "";
     },
+
+    // I added this line
+    // startEditMessageNewButton(message) {
+    //   this.startEditMessage(message);
+    // },
   },
 };
 
@@ -583,16 +690,10 @@ const Reply = {
         this.replyingToReply = null;
       }
     },
-    // startReplyToReply(reply) {
-    //   replyContent = this.sendReply();
-    //   this.replyingToReply = reply;
-    //   this.showReplyForm = true;
-    // },
     startReplyToReply(reply) {
       this.replyingToReply = reply;
       this.showReplyForm = true;
     },
-
     removeReply(reply) {
       this.$gf.remove(reply);
     },
@@ -616,7 +717,9 @@ const Reply = {
 
 const ProfilePicture = {
   props: ["actor", "editable"],
-
+  // components: {
+  //   Reply,
+  // },
   setup(props) {
     const { actor } = Vue.toRefs(props);
     const $gf = Vue.inject("graffiti");
@@ -693,5 +796,10 @@ const ProfilePicture = {
 };
 
 app.components = { Name, Like, Read, Reply, ProfilePicture };
+// app.component("Name", Name);
+// app.component("Like", Like);
+// app.component("Read", Read);
+// app.component("Reply", Reply);
+// app.component("ProfilePicture", ProfilePicture);
 
 Vue.createApp(app).use(GraffitiPlugin(Vue)).mount("#app");

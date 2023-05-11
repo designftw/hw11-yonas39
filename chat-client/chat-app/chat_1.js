@@ -89,6 +89,8 @@ const app = {
       // messages: [],
       // targetLanguage: 'en',
       translatedMessages: {},
+
+      showSettingsModal: false,
     };
   },
   // ################ Sending media in chat (watch) ###########
@@ -214,6 +216,12 @@ const app = {
   },
 
   methods: {
+    // ########################## Setting ###############################
+    toggleSettingsModal() {
+      this.showSettingsModal = !this.showSettingsModal;
+    },
+
+    // ##################### translateMessage ##########################
     async translateMessage(messageContent) {
       if (!messageContent) {
         return messageContent;

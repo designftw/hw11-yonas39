@@ -103,6 +103,14 @@
   align-items: center;
 }
 
+/* .incoming .detected-lang {
+  position: absolute;
+  top: 5%;
+  right: 45%;
+
+  padding: 5px;
+} */
+
 /* Message timestamp */
 .message-timestamp {
   font-size: 0.8em;

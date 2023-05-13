@@ -82,9 +82,12 @@ const app = {
 
       isTyping: false, // I added this
 
-      textToTranslate: "",
-      targetLanguage: "en",
-      translatedText: "",
+      textToTranslate: "", // I added this
+      targetLanguage: "en", // I added this
+      translatedText: "", // I added this
+
+      selectedLanguages: [], // I added this
+      detectedLanguage: null, // I added this
 
       // messages: [],
       // targetLanguage: 'en',
@@ -222,14 +225,51 @@ const app = {
     },
 
     // ##################### translateMessage ##########################
+    async detectLanguage(messageContent) {
+      try {
+        const response = await axios.post(
+          `https://translation.googleapis.com/language/translate/v2/detect?key=${API_KEY}`,
+          {
+            q: messageContent,
+          }
+        );
+
+        if (
+          response.data &&
+          response.data.data &&
+          response.data.data.detections &&
+          // response.data.data.detections.length > 0
+          response.data.data.detections.length > 0 &&
+          response.data.data.detections[0].length > 0
+        ) {
+          return response.data.data.detections[0][0].language;
+        } else {
+          console.error("Language detection failed. Please try again.");
+          return null;
+        }
+      } catch (error) {
+        console.error("Error while detecting language:", error);
+        return null;
+      }
+    },
+
     async translateMessage(messageContent) {
       if (!messageContent) {
         return messageContent;
       }
 
-      if (this.targetLanguage === "en") {
+      const detectedLanguage = await this.detectLanguage(messageContent);
+      this.detectedLanguage = detectedLanguage; // update the detected language
+
+      if (
+        !messageContent ||
+        this.selectedLanguages.includes(detectedLanguage)
+      ) {
         return messageContent;
       }
+      // if (this.selectedLanguages.includes(detectedLanguage)) {
+      //   return messageContent;
+      // }
 
       try {
         const response = await axios.post(
@@ -256,13 +296,59 @@ const app = {
         return messageContent;
       }
     },
+
+    // async translateMessage(messageContent) {
+    //   if (!messageContent) {
+    //     return messageContent;
+    //   }
+
+    //   // ############ Turn this on when the users want to opt a certain language options ###########
+    //   // if (this.targetLanguage === "en") {
+    //   //   return messageContent;
+    //   // }
+
+    //   try {
+    //     const response = await axios.post(
+    //       `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`,
+    //       {
+    //         q: messageContent,
+    //         target: this.targetLanguage,
+    //       }
+    //     );
+
+    //     if (
+    //       response.data &&
+    //       response.data.data &&
+    //       response.data.data.translations &&
+    //       response.data.data.translations.length > 0
+    //     ) {
+    //       return response.data.data.translations[0].translatedText;
+    //     } else {
+    //       console.error("Translation failed. Please try again.");
+    //       return messageContent;
+    //     }
+    //   } catch (error) {
+    //     console.error("Error while translating:", error);
+    //     return messageContent;
+    //   }
+    // },
     async translateAllMessages() {
       for (const message of this.messages) {
-        this.translatedMessages[message.id] = await this.translateMessage(
-          message.content
-        );
+        const detectedLanguage = await this.detectLanguage(message.content);
+        this.translatedMessages[message.id] = {
+          translatedText: await this.translateMessage(message.content),
+          detectedLanguage: detectedLanguage,
+        };
       }
     },
+
+    // async translateAllMessages() {
+    //   for (const message of this.messages) {
+    //     this.translatedMessages[message.id] = await this.translateMessage(
+    //       message.content
+    //     );
+    //   }
+    // },
 
     // ########## Sending media in chat ###############
     onImageAttachment(event) {

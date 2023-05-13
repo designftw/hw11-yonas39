@@ -123,7 +123,7 @@ input[type="submit"]:hover {
 }
 
 /* #################### Help Style ##################### */
-.help-button-container,
+/* .help-button-container,
 .help-modal {
   position: absolute;
   top: 1.3em;
@@ -132,7 +132,6 @@ input[type="submit"]:hover {
 }
 .help-button,
 .close-help-button {
-  /* background-color: #ffffff; */
   background-color: #007bff;
   color: white;
   border: none;
@@ -146,13 +145,13 @@ input[type="submit"]:hover {
 
 .help-button:hover {
   background-color: #4af6ae;
-}
+} */
 
-.help-modal {
-  /* background-color: rgba(248, 255, 251, 0.9); */
-  /* background-color: #007bff;
+/* .help-modal { */
+/* background-color: rgba(248, 255, 251, 0.9); */
+/* background-color: #007bff;
   color: white; */
-  border-radius: 0.5em;
+/* border-radius: 0.5em;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 1em;
   padding: 0.9em;
@@ -166,7 +165,7 @@ input[type="submit"]:hover {
   list-style-type: disc;
   margin: 0.3em;
   padding-left: 1.5em;
-}
+} */
 
 /* unread message sytle */
 .unread-messages {
@@ -215,6 +214,7 @@ input[type="submit"]:hover {
 }
 
 /* ############ Send Message ############# */
+/* ################## Read indicator ################# */
 .read-indicator {
   display: block;
   font-size: 14px;
@@ -227,24 +227,7 @@ input[type="submit"]:hover {
 #read {
   margin-left: 0.25em;
 }
-/* ################## Read indicator ################# */
-/* .read-indicator {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
 
-.num-reads {
-  margin-right: 5px;
-}
-
-.checkmark-icon {
-  width: 14px;
-  height: 14px;
-  background-image: url("checkMark.svg");
-  background-repeat: no-repeat;
-  background-size: contain;
-} */
 .reply-container {
   margin-top: 1rem;
 }
@@ -409,20 +392,20 @@ input[type="submit"]:hover {
   z-index: 1;
 }
 
-.settings-modal ul {
+/* .settings-modal ul {
   list-style: none;
   margin: 0;
   padding: 0;
-}
+} */
 
-.settings-modal label {
+/* .settings-modal label {
   display: inline-block;
   margin-bottom: 5px;
-}
+} */
 
-.settings-modal select {
+/* .settings-modal select {
   margin-left: 10px;
-}
+} */
 
 .close-settings-button {
   margin-top: 10px;
@@ -436,4 +419,157 @@ input[type="submit"]:hover {
 
 .close-settings-button:hover {
   background-color: #3b82f6;
+}
+
+.delete-remove button {
+  margin: 0.2em;
+  background-color: rgb(254, 92, 92);
+}
+
+/* ######### Setting style ########## */
+.settings-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.25em;
+  background-color: #f5f5f5;
+  border-radius: 0.625em;
+  max-width: 37.5em;
+  margin: auto;
+}
+
+.settings-modal h2 {
+  text-align: center;
+  margin-bottom: 1.25em;
+}
+
+.settings-modal ul {
+  list-style-type: none;
+  padding: 0;
+  width: 100%;
+}
+
+.settings-modal li {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25em;
+}
+
+.settings-modal label {
+  margin-bottom: 0.625em;
+}
+
+.settings-modal select {
+  padding: 0.625em;
+  border: 1px solid #ccc;
+  border-radius: 0.25em;
+  font-size: 1em;
+}
+
+.settings-modal .delete-remove {
+  display: flex;
+  align-items: center;
+  margin-top: 0.625em;
+}
+
+.settings-modal .delete-remove button {
+  margin-left: 0.625em;
+  padding: 0.3125em 0.625em;
+  border: none;
+  background-color: red;
+  color: white;
+  border-radius: 0.25em;
+  cursor: pointer;
+}
+
+.settings-modal .delete-remove button:hover {
+  background-color: darkred;
+}
+
+/* ################# HELP styling #################### */
+.help-button-container {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1.25em;
+}
+
+.help-button {
+  padding: 0.625em 1.25em;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 0.25em;
+  cursor: pointer;
+}
+
+.help-button:hover {
+  background-color: #0056b3;
+}
+
+.help-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.25em;
+  background-color: #f5f5f5;
+  border-radius: 0.625em;
+  max-width: 37.5em;
+  margin: auto;
+}
+
+.help-modal p {
+  margin-bottom: 1.25em;
+}
+
+.help-modal ul {
+  list-style-type: none;
+  padding: 0;
+  width: 100%;
+}
+
+.help-modal li {
+  margin-bottom: 0.625em;
+}
+
+.help-modal .close-help-button {
+  margin-top: 0.625em;
+  padding: 0.3125em 0.625em;
+  border: none;
+  background-color: red;
+  color: white;
+  border-radius: 0.25em;
+  cursor: pointer;
+}
+
+.help-modal .close-help-button:hover {
+  background-color: darkred;
+}
+
+/* Responsive styles for smaller screens */
+@media (max-width: 37.5em) {
+  .help-modal {
+    padding: 1em;
+    max-width: 90%;
+  }
+
+  .help-modal p,
+  .help-modal li {
+    font-size: 0.875em; /* 14px */
+  }
+}
+
+/* Responsive styles for smaller screens */
+@media (max-width: 37.5em) {
+  .settings-modal {
+    padding: 1em;
+    max-width: 90%;
+  }
+
+  .settings-modal h2 {
+    font-size: 1.5em;
+  }
+
+  .settings-modal li {
+    margin-bottom: 1em;
+  }
 }

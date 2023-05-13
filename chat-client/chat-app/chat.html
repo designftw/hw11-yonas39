@@ -287,6 +287,17 @@
                 <option value="yo">Yoruba</option>
                 <option value="zu">Zulu</option>
               </select>
+              <div
+                class="delete-remove"
+                v-for="(language, index) in selectedLanguages"
+                :key="index"
+              >
+                {{ language }}
+                <button @click="removeLanguage(index)">Delete</button>
+              </div>
+              <div class="delete-remove">
+                <button @click="removeAllSelectedLanguages">Remove All</button>
+              </div>
             </li>
             <!-- <li>
               <label for="privacy-setting">Privacy Setting:</label>
@@ -301,6 +312,49 @@
             <button class="contact-us-button">Contact Us</button>
             <button class="save-settings-button">Save</button>
           </div> -->
+
+          <!-- ############### Help  #################################-->
+          <!-- ############### Help #################################-->
+          <div class="help-button-container">
+            <button @click="toggleHelpModal" class="help-button">Help</button>
+          </div>
+
+          <transition name="slide-fade">
+            <div class="help-modal" v-if="showHelpModal">
+              <!-- <h2>Help</h2> -->
+              <!-- <p>Explanation of features and functionality here...</p> -->
+              <p>
+                <strong>How to use the chat app:</strong>
+              </p>
+              <ul>
+                <li>Click the "Log In" button to log in or out.</li>
+                <li>
+                  Choose between "Public chat" and "Private Messaging" by
+                  clicking the respective buttons.
+                </li>
+                <li>
+                  For public chat, enter the channel name you want to chat in.
+                  For private messaging, enter the Actor ID of the person you
+                  want to chat with.
+                </li>
+                <li>
+                  Type your message in the input field and click "Send" to send
+                  the message.
+                </li>
+                <li>
+                  Click "Edit Message" or "Delete Message" to edit or delete
+                  your messages.
+                </li>
+                <li>Click "Edit Name" to change your display name.</li>
+              </ul>
+              <button @click="toggleHelpModal" class="close-help-button">
+                Close
+              </button>
+            </div>
+          </transition>
+
+          <!-- ######## close for the setting ############### -->
+
           <button class="close-settings-button" @click="toggleSettingsModal">
             Close
           </button>
@@ -542,45 +596,6 @@
         <!-- ############### Message-content End here ##############################-->
         <!-- ############### Message-content End here ##############################-->
       </template>
-      <!-- ############### Help  #################################-->
-      <!-- ############### Help #################################-->
-      <div class="help-button-container">
-        <button @click="toggleHelpModal" class="help-button">Help</button>
-      </div>
-
-      <transition name="slide-fade">
-        <div class="help-modal" v-if="showHelpModal">
-          <!-- <h2>Help</h2> -->
-          <!-- <p>Explanation of features and functionality here...</p> -->
-          <p>
-            <strong>How to use the chat app:</strong>
-          </p>
-          <ul>
-            <li>Click the "Log In" button to log in or out.</li>
-            <li>
-              Choose between "Public chat" and "Private Messaging" by clicking
-              the respective buttons.
-            </li>
-            <li>
-              For public chat, enter the channel name you want to chat in. For
-              private messaging, enter the Actor ID of the person you want to
-              chat with.
-            </li>
-            <li>
-              Type your message in the input field and click "Send" to send the
-              message.
-            </li>
-            <li>
-              Click "Edit Message" or "Delete Message" to edit or delete your
-              messages.
-            </li>
-            <li>Click "Edit Name" to change your display name.</li>
-          </ul>
-          <button @click="toggleHelpModal" class="close-help-button">
-            Close
-          </button>
-        </div>
-      </transition>
     </div>
 
     <template id="name">

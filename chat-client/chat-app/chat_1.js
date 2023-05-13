@@ -142,6 +142,13 @@ const app = {
         this.translateAllMessages();
       },
     },
+    // ######### select languages not to be translated ##########
+    selectedLanguages: {
+      handler() {
+        this.translateAllMessages();
+      },
+      deep: true,
+    },
   },
 
   computed: {
@@ -223,7 +230,14 @@ const app = {
     toggleSettingsModal() {
       this.showSettingsModal = !this.showSettingsModal;
     },
+    // ################### To remove items from selected array  ############
+    removeAllSelectedLanguages() {
+      this.selectedLanguages = [];
+    },
 
+    removeLanguage(index) {
+      this.selectedLanguages.splice(index, 1);
+    },
     // ##################### translateMessage ##########################
     async detectLanguage(messageContent) {
       try {
@@ -254,6 +268,7 @@ const app = {
     },
 
     async translateMessage(messageContent) {
+      // alert(selectedLanguages);
       if (!messageContent) {
         return messageContent;
       }
@@ -335,12 +350,32 @@ const app = {
     async translateAllMessages() {
       for (const message of this.messages) {
         const detectedLanguage = await this.detectLanguage(message.content);
-        this.translatedMessages[message.id] = {
-          translatedText: await this.translateMessage(message.content),
-          detectedLanguage: detectedLanguage,
-        };
+
+        // Check if the detected language is in the selectedLanguages array
+        // If so, don't translate the message
+        if (this.selectedLanguages.includes(detectedLanguage)) {
+          this.translatedMessages[message.id] = {
+            translatedText: message.content, // Original message, not translated
+            detectedLanguage: detectedLanguage,
+          };
+        } else {
+          this.translatedMessages[message.id] = {
+            translatedText: await this.translateMessage(message.content),
+            detectedLanguage: detectedLanguage,
+          };
+        }
       }
     },
+
+    // async translateAllMessages() {
+    //   for (const message of this.messages) {
+    //     const detectedLanguage = await this.detectLanguage(message.content);
+    //     this.translatedMessages[message.id] = {
+    //       translatedText: await this.translateMessage(message.content),
+    //       detectedLanguage: detectedLanguage,
+    //     };
+    //   }
+    // },
 
     // async translateAllMessages() {
     //   for (const message of this.messages) {

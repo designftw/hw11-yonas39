@@ -465,8 +465,10 @@
               >
                 <div class="message-header">
                   <span v-if="!privateMessaging">
-                    <li>From: {{ actorsToUsernames[message.actor] }}</li></span
-                  >
+                    <!-- <li>From: {{ actorsToUsernames[message.actor] }}</li> -->
+                    <!-- <li>From : {{fetchUsername[actorId]}}</li> -->
+                    <li>From: <name :actor="message.actor"></name></li>
+                  </span>
                   <!-- <li>From: :<name :actor="message.bto[0]"></name></li> -->
 
                   <span v-else>To :<name :actor="message.bto[0]"></name> </span>

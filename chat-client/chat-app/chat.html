@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Let's Chat</title>
     <link rel="stylesheet" href="style_1.css" />
-    <!-- <link rel="stylesheet" href="style_2.css" /> -->
+    <link rel="stylesheet" href="style_2.css" />
 
     <script type="module" src="chat_1.js"></script>
 
@@ -23,6 +23,8 @@
     <!-- ############### App #################################-->
     <!-- ############### App #################################-->
     <div id="app" class="theme">
+      <!-- ################### Translate ####################### -->
+
       <!-- ############### Login and LogOut #################################-->
       <!-- ############### Login and LogOut #################################-->
       <p>
@@ -59,7 +61,6 @@
                 <option value="english">English</option>
                 <option value="spanish">Spanish</option>
               </select> -->
-              <!-- ################### Translate ####################### -->
               <label for="targetLanguage">Translate to : </label>
               <select id="targetLanguage" v-model="targetLanguage">
                 <option value="af">Afrikaans</option>
@@ -320,8 +321,124 @@
 
           <transition name="slide-fade">
             <div class="help-modal" v-if="showHelpModal">
-              <!-- <h2>Help</h2> -->
-              <!-- <p>Explanation of features and functionality here...</p> -->
+              <div class="container">
+                <h1>Let's Chat Help Manual</h1>
+
+                <div class="section">
+                  <h2>Introduction</h2>
+                  <p>
+                    This guide is designed to help you navigate and utilize the
+                    functionalities of the chat interface.
+                  </p>
+                </div>
+                <div class="section">
+                  <h2>User Interface</h2>
+                  <p>
+                    When you enter the chat, you will see a list of messages in
+                    the main chat area. Each message will be in a bubble with
+                    the sender's name and the timestamp of the message. Messages
+                    can contain text, images, and various options for
+                    interaction such as liking, reading, and replying.
+                  </p>
+                </div>
+                <div class="section">
+                  <h2>Profile Picture</h2>
+                  <p>
+                    At the top of the chat interface, you'll see your profile
+                    picture. To change it, click on the "Change Profile Pic"
+                    button. A file dialog will appear, allowing you to select a
+                    new profile picture from your device. Choose an image file
+                    and confirm your choice.
+                  </p>
+                </div>
+                <div class="section">
+                  <h2>Message Attachments</h2>
+                  <p>
+                    You can also share images in the chat. Below the text input
+                    box, click on the "Choose File" button. A file dialog will
+                    appear, allowing you to select an image from your device.
+                    After selecting the image, type any accompanying message in
+                    the text box and click "Send". The image will be sent along
+                    with your message.
+                  </p>
+                </div>
+                <div class="section">
+                  <h2>Message Translation</h2>
+                  <p>
+                    If a message is written in a language different from your
+                    own, the chat app provides a translation feature. You can
+                    access this feature by clicking on the settings, where you
+                    can select the language to which you want the message
+                    translated. Additionally, you have the option to preserve
+                    the original text (untranslated) for the languages you
+                    understand by selecting the corresponding language(s) from
+                    the "Preserve original for" options. If you wish to select
+                    multiple languages, you can use the command+click on Mac or
+                    control+click on Windows. The translated text will be
+                    displayed in place of the original message, along with the
+                    code name of the detected language. This translation feature
+                    greatly assists in understanding messages in different
+                    languages and ensures smooth communication.
+                  </p>
+                </div>
+                <div class="section">
+                  <h2>Reply to a Message</h2>
+                  <p>
+                    When you want to reply to a specific message in the chat,
+                    click on the "Reply" button next to the message you wish to
+                    respond to. A reply form will appear with the text "Replying
+                    to: [previous message]". Type your reply in the text box and
+                    click "Send".
+                  </p>
+                </div>
+                <div class="section">
+                  <h2>Edit Your Name</h2>
+                  <p>
+                    If you want to change your name in the chat, click on the
+                    "Edit Name" button. An input field will appear with a "Save
+                    Name" button. Type your new name and click "Save Name".
+                  </p>
+                </div>
+                <div class="section">
+                  <h2>Read Receipts</h2>
+                  <p>
+                    When you send a message, a double check (✓✓) symbol will
+                    appear to indicate that the message has been read. This
+                    symbol also appears on messages from other users that you
+                    have read.
+                  </p>
+                </div>
+                <div class="section">
+                  <h2>Like a Message</h2>
+                  <p>
+                    You can express your approval or enjoyment of a message by
+                    clicking the "Like" button. If you have already liked a
+                    message, the button will display "Unlike". Click it again to
+                    remove your like.
+                  </p>
+                </div>
+                <div class="section">
+                  <h2>TroubleShooting</h2>
+                  <p>
+                    If you're trying to download an image and it says "Image is
+                    downloading...", please wait for a while as the image is
+                    being downloaded. If it says "Image could not be
+                    downloaded!", please try again. If you're trying to send a
+                    message and it's not being sent, please check your internet
+                    connection and try again. If you're trying to edit your
+                    profile and it's not being updated, please check your
+                    internet connection and try again.
+                  </p>
+                </div>
+
+                <button @click="toggleHelpModal" class="close-help-button">
+                  Close Help
+                </button>
+              </div>
+            </div>
+            <!-- <div class="help-modal" v-if="showHelpModal">
+              <h2>Help</h2>
+              <p>Explanation of features and functionality here...</p>
               <p>
                 <strong>How to use the chat app:</strong>
               </p>
@@ -349,7 +466,7 @@
               <button @click="toggleHelpModal" class="close-help-button">
                 Close
               </button>
-            </div>
+            </div> -->
           </transition>
 
           <!-- ######## close for the setting ############### -->

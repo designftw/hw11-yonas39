@@ -83,7 +83,7 @@ const app = {
       isTyping: false, // I added this
 
       textToTranslate: "", // I added this
-      targetLanguage: "en", // I added this
+      targetLanguage: "", // I added this
       translatedText: "", // I added this
 
       selectedLanguages: [], // I added this

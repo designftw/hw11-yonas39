@@ -293,10 +293,12 @@
                 :key="index"
               >
                 {{ language }}
-                <button @click="removeLanguage(index)">Delete</button>
+                <button @click="removeLanguage(index)">X</button>
               </div>
               <div class="delete-remove">
-                <button @click="removeAllSelectedLanguages">Remove All</button>
+                <button @click="removeAllSelectedLanguages">
+                  Remove All 🗑️
+                </button>
               </div>
             </li>
             <!-- <li>
@@ -360,6 +362,25 @@
                     After selecting the image, type any accompanying message in
                     the text box and click "Send". The image will be sent along
                     with your message.
+                  </p>
+                </div>
+                <div class="section">
+                  <h2>Sending Private Messages</h2>
+                  <p>
+                    To send a private message, start by toggling the "Chat Mode:
+                    Public" to "Chat Mode: Private". Once in private mode, you
+                    will notice a "Search by Username" field in the input box.
+                    Double-check your spelling and ensure that you are typing
+                    the username of the person you wish to message, rather than
+                    their profile name. If you encounter an error message,
+                    double-check your spelling and make sure you are accurately
+                    entering the username. It's important to note that the
+                    person you are trying to reach may not be signed up on the
+                    Let's Chat app. In such cases, the messaging feature may not
+                    be available for that particular user. Once you have
+                    confirmed the correct username and verified that the person
+                    is signed up on the Let's Chat app, you can compose and send
+                    your messages directly to them.
                   </p>
                 </div>
                 <div class="section">
@@ -657,10 +678,14 @@
                   <div class="actions-container">
                     <template v-if="message.actor==$gf.me">
                       <li>
-                        <button @click="removeMessage(message)">Delete</button>
+                        <button @click="removeMessage(message)">
+                          Delete 🗑️
+                        </button>
                       </li>
                       <li>
-                        <button @click="startEditMessage(message)">Edit</button>
+                        <button @click="startEditMessage(message)">
+                          Edit ✍🏾
+                        </button>
                       </li>
                     </template>
                     <li>
@@ -724,7 +749,7 @@
         {{ profile? profile.name : 'Anonymous' }}
 
         <!-- Also if the name is "editable" add an edit button -->
-        <button v-if="editable" @click="editName">Edit Name</button>
+        <button v-if="editable" @click="editName">Edit Name ✍🏾</button>
       </span>
 
       <!-- If we're in the editing state, create something to edit the name-->
@@ -737,9 +762,9 @@
     <!-- ############# LIKE Template ################# -->
     <template id="like">
       <button @click="toggleLike">
-        {{ myLikes.length? 'Unlike' : 'Like' }}
+        {{ myLikes.length? 'Unlike 👎🏾' : 'Like 👍🏾' }}
       </button>
-      liked by: {{ numLikes }}
+      :{{ numLikes }}
     </template>
 
     <!-- ############# READ Template ################# -->
@@ -759,10 +784,10 @@
 
     <template id="reply">
       <div class="reply-container">
-        <button @click="showReplyForm = !showReplyForm">Reply</button>
+        <button @click="showReplyForm = !showReplyForm">Reply ⏎</button>
         <div v-if="showReplyForm" class="reply-form">
           <div class="quoted-message">
-            <span>Replying to:</span>
+            <span>Replying to ⏎:</span>
             <span
               >{{ replyingToReply ? replyingToReply.content :
               repliedMessageSnippet }}</span
@@ -778,7 +803,7 @@
         <div class="replies">
           <div v-for="reply in replies" class="reply-message">
             <div class="quoted-message">
-              <span>Replying to:</span>
+              <span>Replying to ⏎:</span>
               <span>{{ repliedMessageSnippet }}</span>
             </div>
             <span v-if="editingReply === reply">
@@ -788,10 +813,10 @@
             <span v-else>
               {{ reply.content }}
               <template v-if="reply.actor==$gf.me">
-                <button @click="removeReply(reply)">Delete</button>
-                <button @click="startEditReply(reply)">Edit</button>
+                <button @click="removeReply(reply)">Delete 🗑️</button>
+                <button @click="startEditReply(reply)">Edit ✍🏾</button>
               </template>
-              <button @click="startReplyToReply(reply)">Reply</button>
+              <button @click="startReplyToReply(reply)">Reply ⏎</button>
             </span>
           </div>
         </div>

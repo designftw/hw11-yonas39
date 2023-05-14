@@ -91,6 +91,8 @@ const app = {
 
       theme: "light", // I added this
 
+      deletedMessages: {},
+
       // messages: [],
       // targetLanguage: 'en',
       translatedMessages: {},
@@ -412,11 +414,31 @@ const app = {
     },
 
     // ######## Date Format ##################
+    // formatDate(dateString) {
+    //   const date = new Date(dateString);
+    //   return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    // },
     formatDate(dateString) {
       const date = new Date(dateString);
-      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-    },
+      const now = new Date();
 
+      let formatString = "";
+
+      if (date.getFullYear() !== now.getFullYear()) {
+        // If the message is from a previous year, include the year in the date string.
+        formatString = `${date.getFullYear()}/`;
+      }
+
+      // Add month and day
+      formatString += `${date.getMonth() + 1}/${date.getDate()} `;
+
+      // Add time
+      formatString += `${date.getHours()}:${("0" + date.getMinutes()).slice(
+        -2
+      )}`; // this will ensure minutes are always 2 digits
+
+      return formatString;
+    },
     // ##########################  toggleHelpModal #################################
     // ##########################  toggleHelpModal #################################
     // ##########################  toggleHelpModal #################################
@@ -547,6 +569,8 @@ const app = {
       this.file = null;
       this.messageText = "";
     },
+
+    //################# remove and confirmation for remove ##############
 
     removeMessage(message) {
       this.$gf.remove(message);

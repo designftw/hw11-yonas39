@@ -89,6 +89,8 @@ const app = {
       selectedLanguages: [], // I added this
       detectedLanguage: null, // I added this
 
+      theme: "light", // I added this
+
       // messages: [],
       // targetLanguage: 'en',
       translatedMessages: {},
@@ -149,6 +151,15 @@ const app = {
       },
       deep: true,
     },
+
+    // ################# app THEME ##################
+    theme(newValue) {
+      document.body.classList.remove("light", "dark");
+      document.body.classList.add(newValue);
+    },
+  },
+  created() {
+    document.body.classList.add(this.theme);
   },
 
   computed: {

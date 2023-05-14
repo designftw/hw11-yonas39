@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Let's Chat</title>
     <link rel="stylesheet" href="style_1.css" />
-    <link rel="stylesheet" href="style_2.css" />
+    <!-- <link rel="stylesheet" href="style_2.css" /> -->
 
     <script type="module" src="chat_1.js"></script>
 
@@ -22,9 +22,7 @@
 
     <!-- ############### App #################################-->
     <!-- ############### App #################################-->
-    <div id="app">
-      <!-- ################### Translate ####################### -->
-
+    <div id="app" class="theme">
       <!-- ############### Login and LogOut #################################-->
       <!-- ############### Login and LogOut #################################-->
       <p>
@@ -50,7 +48,7 @@
               <label for="background-color-theme"
                 >Background Color Theme:</label
               >
-              <select id="background-color-theme">
+              <select id="background-color-theme" v-model="theme">
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
               </select>
@@ -61,6 +59,7 @@
                 <option value="english">English</option>
                 <option value="spanish">Spanish</option>
               </select> -->
+              <!-- ################### Translate ####################### -->
               <label for="targetLanguage">Translate to : </label>
               <select id="targetLanguage" v-model="targetLanguage">
                 <option value="af">Afrikaans</option>

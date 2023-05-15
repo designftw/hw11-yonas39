@@ -239,11 +239,14 @@ const app = {
   },
 
   methods: {
+    // ##################################################################
     // ########################## Setting ###############################
     toggleSettingsModal() {
       this.showSettingsModal = !this.showSettingsModal;
     },
-    // ################### To remove items from selected array  ############
+
+    // ##############################################################################
+    // ############################### Language Translation #########################
     removeAllSelectedLanguages() {
       this.selectedLanguages = [];
     },
@@ -251,7 +254,8 @@ const app = {
     removeLanguage(index) {
       this.selectedLanguages.splice(index, 1);
     },
-    // ##################### translateMessage ##########################
+
+    //  Detetect language
     async detectLanguage(messageContent) {
       try {
         const response = await axios.post(
@@ -295,9 +299,6 @@ const app = {
       ) {
         return messageContent;
       }
-      // if (this.selectedLanguages.includes(detectedLanguage)) {
-      //   return messageContent;
-      // }
 
       try {
         const response = await axios.post(

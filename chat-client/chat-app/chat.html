@@ -445,37 +445,6 @@
                 </button>
               </div>
             </div>
-            <!-- <div class="help-modal" v-if="showHelpModal">
-              <h2>Help</h2>
-              <p>Explanation of features and functionality here...</p>
-              <p>
-                <strong>How to use the chat app:</strong>
-              </p>
-              <ul>
-                <li>Click the "Log In" button to log in or out.</li>
-                <li>
-                  Choose between "Public chat" and "Private Messaging" by
-                  clicking the respective buttons.
-                </li>
-                <li>
-                  For public chat, enter the channel name you want to chat in.
-                  For private messaging, enter the Actor ID of the person you
-                  want to chat with.
-                </li>
-                <li>
-                  Type your message in the input field and click "Send" to send
-                  the message.
-                </li>
-                <li>
-                  Click "Edit Message" or "Delete Message" to edit or delete
-                  your messages.
-                </li>
-                <li>Click "Edit Name" to change your display name.</li>
-              </ul>
-              <button @click="toggleHelpModal" class="close-help-button">
-                Close
-              </button>
-            </div> -->
           </transition>
 
           <!-- ######## close for the setting ############### -->
@@ -541,7 +510,7 @@
         <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ -->
         <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ -->
 
-        <p v-if="!privateMessaging" class="channel-base">
+        <p v-if="!privateMessaging">
           <label for="channel"> Change the channel you're chatting in: </label>
           <input id="channel" v-model="channel" />
         </p>
@@ -551,17 +520,13 @@
         <p v-else>
           <label for="username">Search by Username:</label>
           <input id="username" v-model="searchedUsername" />
-          <button @click="searchByUsername">Search</button>
+          <button @click="searchByUsername">🔍Search</button>
           <span v-if="recipient"> Chatting with {{ recipientUsername }} </span>
           <span class="search-status" v-if="searchError"
             >{{ searchError }}</span
           >
           <span v-if="searchLoading">Loading...</span>
         </p>
-
-        <!-- ############### Error when sending message ##############################-->
-        <!-- ############### Error when sending message ##############################-->
-        <div class="error-message" v-if="errorMessage">{{ errorMessage }}</div>
 
         <!-- ############### messages-container ##############################-->
         <!-- ############### messages-container ##############################-->
@@ -706,6 +671,12 @@
           <!-- ############### Send message ##############################-->
           <!-- ############### Send message ##############################-->
           <div class="message-send-button">
+            <!-- ############### Error when sending message ##############################-->
+            <!-- ############### Error when sending message ##############################-->
+            <div class="error-message" v-if="errorMessage">
+              {{ errorMessage }}
+            </div>
+
             <!-- A form for sending messages -->
             <form @submit.prevent="sendMessage" class="send-input">
               <input
@@ -717,6 +688,7 @@
               <!-- <span>📸</span> -->
               <input type="file" accept="image/*" @change="onImageAttachment" />
               <input class="submit-button" type="submit" value="Send" />
+
               <!-- @focus="handleInputFocus"
               @blur="handleInputBlur" -->
 

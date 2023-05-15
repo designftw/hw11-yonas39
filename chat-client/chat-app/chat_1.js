@@ -10,11 +10,13 @@ const app = {
   // Import resolver
   created() {
     this.resolver = new Resolver(this.$gf);
+
+    // document.body.classList.add(this.theme);
   },
 
   setup() {
     // Initialize the name of the channel we're chatting in
-    const channel = Vue.ref("default");
+    const channel = Vue.ref("default-demo");
 
     // And a flag for whether or not we're private-messaging
     const privateMessaging = Vue.ref(false);
@@ -28,12 +30,12 @@ const app = {
 
     // Initialize the collection of messages associated with the context
     const { objects: messagesRaw } = $gf.useObjects(context);
-    // return { channel, privateMessaging, messagesRaw }; // Commented to test the code below
+    return { channel, privateMessaging, messagesRaw }; // Commented to test the code below
 
     // ############### Read Activity ####################
     // const { objects: readActivities } = $gf.useObjects(context);
     // return { channel, privateMessaging, messagesRaw, readActivities };
-    return { channel, privateMessaging, messagesRaw };
+    // return { channel, privateMessaging, messagesRaw };
   },
 
   data() {
@@ -89,7 +91,7 @@ const app = {
       selectedLanguages: [], // I added this
       detectedLanguage: null, // I added this
 
-      theme: "light", // I added this
+      // theme: "light", // I added this
 
       deletedMessages: {},
 
@@ -155,13 +157,10 @@ const app = {
     },
 
     // ################# app THEME ##################
-    theme(newValue) {
-      document.body.classList.remove("light", "dark");
-      document.body.classList.add(newValue);
-    },
-  },
-  created() {
-    document.body.classList.add(this.theme);
+    // theme(newValue) {
+    //   document.body.classList.remove("light", "dark");
+    //   document.body.classList.add(newValue);
+    // },
   },
 
   computed: {
@@ -326,41 +325,6 @@ const app = {
       }
     },
 
-    // async translateMessage(messageContent) {
-    //   if (!messageContent) {
-    //     return messageContent;
-    //   }
-
-    //   // ############ Turn this on when the users want to opt a certain language options ###########
-    //   // if (this.targetLanguage === "en") {
-    //   //   return messageContent;
-    //   // }
-
-    //   try {
-    //     const response = await axios.post(
-    //       `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`,
-    //       {
-    //         q: messageContent,
-    //         target: this.targetLanguage,
-    //       }
-    //     );
-
-    //     if (
-    //       response.data &&
-    //       response.data.data &&
-    //       response.data.data.translations &&
-    //       response.data.data.translations.length > 0
-    //     ) {
-    //       return response.data.data.translations[0].translatedText;
-    //     } else {
-    //       console.error("Translation failed. Please try again.");
-    //       return messageContent;
-    //     }
-    //   } catch (error) {
-    //     console.error("Error while translating:", error);
-    //     return messageContent;
-    //   }
-    // },
     async translateAllMessages() {
       for (const message of this.messages) {
         const detectedLanguage = await this.detectLanguage(message.content);
@@ -381,25 +345,8 @@ const app = {
       }
     },
 
-    // async translateAllMessages() {
-    //   for (const message of this.messages) {
-    //     const detectedLanguage = await this.detectLanguage(message.content);
-    //     this.translatedMessages[message.id] = {
-    //       translatedText: await this.translateMessage(message.content),
-    //       detectedLanguage: detectedLanguage,
-    //     };
-    //   }
-    // },
-
-    // async translateAllMessages() {
-    //   for (const message of this.messages) {
-    //     this.translatedMessages[message.id] = await this.translateMessage(
-    //       message.content
-    //     );
-    //   }
-    // },
-
-    // ########## Sending media in chat ###############
+    // ###############################################################
+    // ########## Sending media in chat ##############################
     onImageAttachment(event) {
       const file = event.target.files[0];
       this.file = file;
@@ -413,12 +360,9 @@ const app = {
     handleInputBlur() {
       this.isBlur = false;
     },
+    // #################################################################
+    // ######## Date Format ############################################
 
-    // ######## Date Format ##################
-    // formatDate(dateString) {
-    //   const date = new Date(dateString);
-    //   return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-    // },
     formatDate(dateString) {
       const date = new Date(dateString);
       const now = new Date();
@@ -440,13 +384,13 @@ const app = {
 
       return formatString;
     },
-    // ##########################  toggleHelpModal #################################
+
     // ##########################  toggleHelpModal #################################
     // ##########################  toggleHelpModal #################################
     toggleHelpModal() {
       this.showHelpModal = !this.showHelpModal;
     },
-    // ##########################  selectSuggestedUsername #################################
+
     // ##########################  selectSuggestedUsername #################################
     // ##########################  selectSuggestedUsername #################################
     selectSuggestedUsername(suggestedUsername) {
@@ -483,7 +427,6 @@ const app = {
 
     // ########################## Request Username #################################
     // ########################## Request Username #################################
-    // ########################## Request Username #################################
     async setUsername() {
       try {
         this.usernameResult = await this.resolver.requestUsername(
@@ -494,11 +437,10 @@ const app = {
         this.usernameResult = e.toString();
         setTimeout(() => {
           this.usernameResult = "";
-        }, 2000);
+        }, 3000);
       }
     },
 
-    // ########################## Search by Username #################################
     // ########################## Search by Username #################################
     // ########################## Search by Username #################################
 
@@ -507,6 +449,9 @@ const app = {
       this.searchLoading = true;
 
       try {
+        // const actorID = await this.resolver.usernameToActor(
+        //   this.searchedUsername
+
         const actorID = await this.resolver.usernameToActor(
           this.searchedUsername
         );
@@ -534,15 +479,17 @@ const app = {
     // ########################## sendMessage() #################################
     // ########################## sendMessage() #################################
     async sendMessage() {
+      if (!this.messageText.trim() && !this.file) {
+        this.errorMessage = "Empty message !";
+        setTimeout(() => {
+          this.errorMessage = "";
+        }, 3000);
+        return;
+      }
       const message = {
         type: "Note",
         content: this.messageText,
       };
-
-      if (!this.messageText.trim() && !this.file) {
-        this.errorMessage = "Empty message !";
-        return;
-      }
 
       if (this.file) {
         message.attachment = {
@@ -567,7 +514,7 @@ const app = {
       // Send!
       this.$gf.post(message);
 
-      this.file = null;
+      // this.file = null;
       this.messageText = "";
     },
 
@@ -591,11 +538,6 @@ const app = {
       // And clear the edit mark
       this.editID = "";
     },
-
-    // I added this line
-    // startEditMessageNewButton(message) {
-    //   this.startEditMessage(message);
-    // },
   },
 };
 

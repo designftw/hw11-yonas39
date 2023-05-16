@@ -290,6 +290,7 @@ input[type="submit"]:hover {
 }
 
 /*############### Reply text styling  #####################*/
+
 .reply-container {
   font-family: Arial, sans-serif;
   margin-left: 1em;
@@ -344,6 +345,67 @@ input[type="submit"]:hover {
   margin-left: 0.5em;
 }
 
+.sender-reply {
+  background-color: rgb(36, 6, 11);
+  color: #fff;
+}
+
+/* .reply-container {
+  font-family: Arial, sans-serif;
+  margin-left: 1em;
+}
+
+.reply-form {
+  display: flex;
+  margin-bottom: 0.625em;
+}
+
+.reply-form input {
+  flex-grow: 1;
+  border: 1px solid #ccc;
+  border-radius: 1.125em;
+  padding: 0.5em 0.75em;
+  margin-right: 0.625em;
+}
+
+.reply-form button {
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 0.25em;
+  padding: 0.5em 0.75em;
+  cursor: pointer;
+}
+
+.reply-message {
+  background-color: #f0f2f5;
+  border-radius: 1.125em;
+  padding: 0.75em;
+  margin-bottom: 0.5em;
+  display: inline-block;
+}
+
+.quoted-message {
+  font-size: 0.85em;
+  color: #666;
+  margin-bottom: 0.5em;
+}
+
+.replies {
+  margin-left: 1.25em;
+}
+
+.replies button {
+  background-color: transparent;
+  border: none;
+  color: #1877f2;
+  cursor: pointer;
+  font-size: 0.85em;
+  margin-left: 0.5em;
+}
+#sender-reply {
+  background-color: rgb(36, 6, 11);
+} */
 /* ################# Setting menu ############### */
 /* .settings-container {
   position: absolute;
@@ -557,6 +619,31 @@ input[type="submit"]:hover {
 } */
 
 /* Responsive styles for smaller screens */
+.reciepient-name {
+  margin-top: 2em;
+  padding: 1em;
+  display: block;
+  /* text-align: center; */
+  font-weight: bold;
+}
+#chat-span {
+  /* margin-left: 2em; */
+  animation: bounce 1s infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+  background-color: yellow;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-10px);
+  }
+}
 @media (max-width: 37.5em) {
   .help-modal {
     padding: 1em;

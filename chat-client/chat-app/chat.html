@@ -46,7 +46,7 @@
         <div class="settings-modal" v-if="showSettingsModal">
           <h2>Settings</h2>
           <ul>
-            <li>
+            <!-- <li>
               <label for="background-color-theme"
                 >Background Color Theme:</label
               >
@@ -54,7 +54,7 @@
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
               </select>
-            </li>
+            </li> -->
             <li>
               <!-- <label for="language-setting">Language Setting:</label>
               <select id="language-setting">
@@ -521,7 +521,14 @@
           <label for="username">Search by Username:</label>
           <input id="username" v-model="searchedUsername" />
           <button @click="searchByUsername">🔍Search</button>
-          <span v-if="recipient"> Chatting with {{ recipientUsername }} </span>
+
+          <span v-if="recipient" class="reciepient-name">
+            <!-- Profile Picture:
+            <profile-picture :actor="message.actor"></profile-picture> -->
+
+            Chatting with: <span id="chat-span">{{ recipientUsername }}</span>
+          </span>
+
           <span class="search-status" v-if="searchError"
             >{{ searchError }}</span
           >
@@ -538,30 +545,35 @@
               :key="message.id"
               class="v-enter v-enter-active"
             >
-              <!-- Display and edit form if we're editing a message -->
-              <form
-                v-if="editID==message.id"
-                @submit.prevent="saveEditMessage(message)"
-              >
-                <input v-model="editText" />
-                <input type="submit" value="Save" />
-              </form>
-
               <!-- Otherwise, display a bunch of properties from the message -->
               <ul
                 class="message-info"
                 :class="{'incoming':message.actor!==$gf.me, 'outgoing':message.actor===$gf.me}"
                 v-else
               >
+                <!-- Display and edit form if we're editing a message -->
+                <form
+                  v-if="editID==message.id"
+                  @submit.prevent="saveEditMessage(message)"
+                >
+                  <input class="edit" v-model="editText" />
+                  <input class="edit-save" type="submit" value="Save" />
+                </form>
+
                 <div class="message-header">
                   <span v-if="!privateMessaging">
-                    <!-- <li>From: {{ actorsToUsernames[message.actor] }}</li> -->
-                    <!-- <li>From : {{fetchUsername[actorId]}}</li> -->
-                    <li>From: <name :actor="message.actor"></name></li>
+                    <!-- <profile-picture
+                      :actor="message.actor"
+                      :editable="false"
+                    ></profile-picture> -->
+                    <li>
+                      From:
+                      <strong> <name :actor="message.actor"></name></strong>
+                    </li>
                   </span>
                   <!-- <li>From: :<name :actor="message.bto[0]"></name></li> -->
 
-                  <span v-else>To :<name :actor="message.bto[0]"></name> </span>
+                  <!-- <span v-else>To :<name :actor="message.bto[0]"></name> </span> -->
                 </div>
 
                 <!-- <li id="text-message">Message: {{ message.content }}</li> -->
@@ -592,8 +604,8 @@
 
                 <div>
                   <span class="detected-lang">
-                    Det Lang: {{ translatedMessages[message.id].detectedLanguage
-                    }}</span
+                    Language 🌐: {{
+                    translatedMessages[message.id].detectedLanguage }}</span
                   >
                 </div>
 
@@ -631,7 +643,7 @@
                   <div class="actions-container">
                     <template v-if="message.actor==$gf.me">
                       <li>
-                        <button @click="removeMessage(message)">
+                        <button @click="confirmDelete(message)">
                           Delete 🗑️
                         </button>
                       </li>
@@ -762,7 +774,11 @@
           <button @click="sendReply">Send</button>
         </div>
         <div class="replies">
-          <div v-for="reply in replies" class="reply-message">
+          <div
+            v-for="reply in replies"
+            class="reply-message"
+            :class="{ 'sender-reply': reply.actor === $gf.me }"
+          >
             <div class="quoted-message">
               <span>Replying to ⏎:</span>
               <span>{{ repliedMessageSnippet }}</span>
@@ -773,18 +789,60 @@
             </span>
             <span v-else>
               {{ reply.content }}
-              <template v-if="reply.actor==$gf.me">
-                <button @click="removeReply(reply)">Delete 🗑️</button>
+              <template v-if="reply.actor === $gf.me">
+                <button @click="confirmDelete(reply)">Delete 🗑️</button>
                 <button @click="startEditReply(reply)">Edit ✍🏾</button>
               </template>
               <button @click="startReplyToReply(reply)">Reply ⏎</button>
             </span>
+            <!-- Nested Reply Form -->
+            <div
+              v-if="showReplyForm && replyingToReply === reply"
+              class="reply-form"
+            >
+              <div class="quoted-message">
+                <span>Replying to ⏎:</span>
+                <span>{{ replyingToReply.content }}</span>
+              </div>
+              <input
+                type="text"
+                v-model="replyContent"
+                placeholder="Write a reply..."
+              />
+              <button @click="sendReply">Send</button>
+            </div>
+
+            <!-- Nested Replies Display -->
+            <div
+              v-for="subReply in replyReplies(reply.id)"
+              :key="subReply.id"
+              class="sub-reply"
+            >
+              <div
+                class="reply-message"
+                :class="{ 'sender-reply': subReply.actor === $gf.me }"
+              >
+                <span v-if="editingReply === subReply">
+                  <input v-model="editText" />
+                  <button @click="saveEditReply">Save</button>
+                </span>
+                <span v-else>
+                  {{ subReply.content }}
+                  <template v-if="subReply.actor === $gf.me">
+                    <button @click="confirmDelete(subReply)">Delete 🗑️</button>
+                    <button @click="startEditReply(subReply)">Edit ✍🏾</button>
+                  </template>
+                  <button @click="startReplyToReply(subReply)">Reply ⏎</button>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </template>
 
     <!--############### Profile picture #################### -->
+
     <script type="text/x-template" id="profile-picture">
       <div>
         <img class="profile-image" v-if="localImageUrl" :src="localImageUrl" />

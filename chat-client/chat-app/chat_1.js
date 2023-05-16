@@ -473,6 +473,7 @@ const app = {
       } finally {
         this.searchLoading = false;
       }
+      this.searchedUsername = "";
     },
 
     // ########################## sendMessage() #################################
@@ -514,12 +515,16 @@ const app = {
       // Send!
       this.$gf.post(message);
 
-      // this.file = null;
+      this.file = null;
       this.messageText = "";
     },
 
     //################# remove and confirmation for remove ##############
-
+    confirmDelete(message) {
+      if (window.confirm("Are you sure you want to delete this message?")) {
+        this.$gf.remove(message);
+      }
+    },
     removeMessage(message) {
       this.$gf.remove(message);
     },
@@ -705,8 +710,8 @@ const Read = {
 //  ############ REPLY ###################
 
 const Reply = {
+  name: "Reply",
   props: ["messageid", "content", "sender"],
-
   data() {
     return {
       replyContent: "",
@@ -716,14 +721,12 @@ const Reply = {
       editText: "",
     };
   },
-
   setup(props) {
     const $gf = Vue.inject("graffiti");
     const messageid = Vue.toRef(props, "messageid");
     const { objects: repliesRaw } = $gf.useObjects([messageid]);
     return { repliesRaw };
   },
-
   computed: {
     replies() {
       return this.repliesRaw.filter(
@@ -736,8 +739,12 @@ const Reply = {
         : this.content;
     },
   },
-
   methods: {
+    replyReplies(replyId) {
+      return this.repliesRaw.filter(
+        (r) => r.type == "Note" && r.inReplyTo == replyId
+      );
+    },
     sendReply() {
       if (this.replyContent.trim()) {
         const inReplyTo = this.replyingToReply
@@ -759,6 +766,11 @@ const Reply = {
       this.replyingToReply = reply;
       this.showReplyForm = true;
     },
+    confirmDelete(reply) {
+      if (window.confirm("Are you sure you want to delete this message?")) {
+        this.removeReply(reply);
+      }
+    },
     removeReply(reply) {
       this.$gf.remove(reply);
     },
@@ -774,7 +786,6 @@ const Reply = {
       }
     },
   },
-
   template: "#reply",
 };
 
@@ -854,6 +865,10 @@ const ProfilePicture = {
         });
       }
       this.editing = false;
+    },
+    onPicture(event) {
+      const file = event.target.files[0];
+      this.file = file;
     },
   },
 

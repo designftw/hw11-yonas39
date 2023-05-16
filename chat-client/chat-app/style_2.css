@@ -103,14 +103,19 @@
   align-items: center;
 }
 
-/* .incoming .detected-lang {
+/* .detected-lang {
+  text-align: right;
+} */
+.incoming .detected-lang {
   position: absolute;
   top: 5%;
   right: 45%;
 
   padding: 5px;
-} */
-
+}
+.outgoing .detected-lang {
+  display: none;
+}
 /* Message timestamp */
 .message-timestamp {
   font-size: 0.8em;
@@ -359,6 +364,21 @@ button {
 
 button:hover {
   transform: scale(1.1);
+}
+/* ############################# Edit window ##################### */
+.edit {
+  border: 0.0625em solid #ccc;
+  height: 3em;
+  font-size: 1em;
+  /* border-radius: 0.3125em; */
+  border-radius: 1.125em;
+  width: 60%;
+}
+.edit-save {
+  border: 0.0625em solid #ccc;
+  border-radius: 1.125em;
+  font-size: large;
+  width: 20%;
 }
 /* ###################### Responsive Design ###################### */
 /* Responsive styles */

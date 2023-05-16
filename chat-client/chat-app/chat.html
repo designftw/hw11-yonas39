@@ -737,7 +737,7 @@
       <button @click="toggleLike">
         {{ myLikes.length? 'Unlike 👎🏾' : 'Like 👍🏾' }}
       </button>
-      :{{ numLikes }}
+      ({{ numLikes }})
     </template>
 
     <!-- ############# READ Template ################# -->
@@ -748,14 +748,13 @@
         >
       </div>
       <div class="read-indicator" v-if="sender !== $gf.me">
-        ✓✓
-        <!-- read by: {{ numReads }} -->
+        read ✓✓ ({{ numReads }})
       </div>
     </template>
 
     <!-- ############# REPLY Template ################# -->
 
-    <template id="reply">
+    <!-- <template id="reply">
       <div class="reply-container">
         <button @click="showReplyForm = !showReplyForm">Reply ⏎</button>
         <div v-if="showReplyForm" class="reply-form">
@@ -795,7 +794,7 @@
               </template>
               <button @click="startReplyToReply(reply)">Reply ⏎</button>
             </span>
-            <!-- Nested Reply Form -->
+     
             <div
               v-if="showReplyForm && replyingToReply === reply"
               class="reply-form"
@@ -812,7 +811,7 @@
               <button @click="sendReply">Send</button>
             </div>
 
-            <!-- Nested Replies Display -->
+  
             <div
               v-for="subReply in replyReplies(reply.id)"
               :key="subReply.id"
@@ -839,7 +838,7 @@
           </div>
         </div>
       </div>
-    </template>
+    </template> -->
 
     <!--############### Profile picture #################### -->
 

@@ -3,6 +3,7 @@ import { mixin } from "https://mavue.mavo.io/mavue.js";
 import GraffitiPlugin from "https://graffiti.garden/graffiti-js/plugins/vue/plugin.js";
 import Resolver from "./resolver.js";
 const API_KEY = "AIzaSyA3jLJjBvwVZXPfHJo7BIV2RXYFpfCkH48";
+
 const app = {
   // Import MaVue
   mixins: [mixin],
@@ -700,91 +701,259 @@ const Read = {
 };
 
 //  ############ REPLY ###################
+const TranslationMixin = {
+  data() {
+    return {
+      textToTranslate: "",
+      targetLanguage: "",
+      translatedText: "",
+      selectedLanguages: [],
+      detectedLanguage: null,
+      translatedMessages: {},
+    };
+  },
+  watch: {
+    targetLanguage() {
+      this.translateAllMessages();
+    },
+    messages: {
+      deep: true,
+      handler() {
+        this.translateAllMessages();
+      },
+    },
+    replies: {
+      deep: true,
+      handler() {
+        this.translateAllMessages();
+      },
+    },
+    repliesRaw: {
+      deep: true,
+      handler() {
+        this.translateAllMessages();
+      },
+    },
+    selectedLanguages: {
+      handler() {
+        this.translateAllMessages();
+      },
+      deep: true,
+    },
+  },
 
-// const Reply = {
-//   name: "Reply",
-//   props: ["messageid", "content", "sender"],
-//   data() {
-//     return {
-//       replyContent: "",
-//       showReplyForm: false,
-//       replyingToReply: null,
-//       editingReply: null,
-//       editText: "",
-//     };
-//   },
+  methods: {
+    async detectLanguage(messageContent) {
+      try {
+        const response = await axios.post(
+          `https://translation.googleapis.com/language/translate/v2/detect?key=${API_KEY}`,
+          {
+            q: messageContent,
+          }
+        );
 
-//   setup(props) {
-//     const $gf = Vue.inject("graffiti");
-//     const messageid = Vue.toRef(props, "messageid");
-//     const { objects: repliesRaw } = $gf.useObjects([messageid]);
-//     return { repliesRaw };
-//   },
-//   computed: {
-//     replies() {
-//       return this.repliesRaw.filter(
-//         (r) => r.type == "Note" && r.inReplyTo == this.messageid
-//       );
-//     },
-//     repliedMessageSnippet() {
-//       return this.content.length > 30
-//         ? this.content.substring(0, 30) + "..."
-//         : this.content;
-//     },
-//   },
-//   methods: {
-//     // #####################################################################
-//     replyReplies(replyId) {
-//       return this.repliesRaw.filter(
-//         (r) => r.type == "Note" && r.inReplyTo == replyId
-//       );
-//     },
-//     // ################ send a reply ##################
+        if (
+          response.data &&
+          response.data.data &&
+          response.data.data.detections &&
+          // response.data.data.detections.length > 0
+          response.data.data.detections.length > 0 &&
+          response.data.data.detections[0].length > 0
+        ) {
+          return response.data.data.detections[0][0].language;
+        } else {
+          console.error("Language detection failed. Please try again.");
+          return null;
+        }
+      } catch (error) {
+        console.error("Error while detecting language:", error);
+        return null;
+      }
+    },
 
-//     sendReply() {
-//       if (this.replyContent.trim()) {
-//         const inReplyTo = this.replyingToReply
-//           ? this.replyingToReply.id
-//           : this.messageid;
-//         this.$gf.post({
-//           type: "Note",
-//           content: this.replyContent,
-//           inReplyTo: inReplyTo,
-//           context: [this.messageid],
-//           to: [this.sender],
-//         });
-//         this.replyContent = "";
-//         this.showReplyForm = false;
-//         this.replyingToReply = null;
-//       }
-//     },
+    async translateMessage(messageContent) {
+      // alert(selectedLanguages);
+      if (!messageContent) {
+        return messageContent;
+      }
 
-//     startReplyToReply(reply) {
-//       this.replyingToReply = reply;
-//       this.showReplyForm = true;
-//     },
-//     confirmDelete(reply) {
-//       if (window.confirm("Are you sure you want to delete this message?")) {
-//         this.removeReply(reply);
-//       }
-//     },
-//     removeReply(reply) {
-//       this.$gf.remove(reply);
-//     },
-//     startEditReply(reply) {
-//       this.editingReply = reply;
-//       this.editText = reply.content;
-//     },
-//     saveEditReply() {
-//       if (this.editText.trim()) {
-//         this.editingReply.content = this.editText;
-//         this.$gf.update(this.editingReply);
-//         this.editingReply = null;
-//       }
-//     },
-//   },
-//   template: "#reply",
-// };
+      const detectedLanguage = await this.detectLanguage(messageContent);
+      this.detectedLanguage = detectedLanguage; // update the detected language
+
+      if (
+        !messageContent ||
+        this.selectedLanguages.includes(detectedLanguage)
+      ) {
+        return messageContent;
+      }
+      this.translatedMessages[messageId] = {
+        translatedText: await this.translateMessage(messageContent),
+        detectedLanguage: detectedLanguage,
+      };
+
+      try {
+        const response = await axios.post(
+          `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`,
+          {
+            q: messageContent,
+            target: this.targetLanguage,
+          }
+        );
+
+        if (
+          response.data &&
+          response.data.data &&
+          response.data.data.translations &&
+          response.data.data.translations.length > 0
+        ) {
+          return response.data.data.translations[0].translatedText;
+        } else {
+          console.error("Translation failed. Please try again.");
+          return messageContent;
+        }
+      } catch (error) {
+        console.error("Error while translating:", error);
+        return messageContent;
+      }
+    },
+
+    async translateAllMessages(messages) {
+      // console.log(this.messages);
+      // for (const message of this.messages)
+      for (const message of [
+        ...this.messages,
+        ...this.replies,
+        ...this.repliesRaw,
+      ]) {
+        const detectedLanguage = await this.detectLanguage(message.content);
+
+        // Check if the detected language is in the selectedLanguages array
+        // If so, don't translate the message
+        if (this.selectedLanguages.includes(detectedLanguage)) {
+          this.translatedMessages[message.id] = {
+            translatedText: message.content, // Original message, not translated
+            detectedLanguage: detectedLanguage,
+          };
+        } else {
+          this.translatedMessages[message.id] = {
+            translatedText: await this.translateMessage(message.content),
+            detectedLanguage: detectedLanguage,
+          };
+        }
+      }
+    },
+
+    removeLanguage(index) {
+      this.selectedLanguages.splice(index, 1);
+    },
+
+    removeAllSelectedLanguages() {
+      this.selectedLanguages = [];
+    },
+  },
+  watch: {
+    targetLanguage() {
+      this.translateAllMessages();
+    },
+    messages: {
+      deep: true,
+      handler() {
+        this.translateAllMessages();
+      },
+    },
+    selectedLanguages: {
+      handler() {
+        this.translateAllMessages();
+      },
+      deep: true,
+    },
+  },
+};
+const Reply = {
+  name: "Reply",
+  mixins: [TranslationMixin],
+  props: ["messageid", "content", "sender"],
+  data() {
+    return {
+      replyContent: "",
+      showReplyForm: false,
+      replyingToReply: null,
+      editingReply: null,
+      editText: "",
+    };
+  },
+
+  setup(props) {
+    const $gf = Vue.inject("graffiti");
+    const messageid = Vue.toRef(props, "messageid");
+    const { objects: repliesRaw } = $gf.useObjects([messageid]);
+    return { repliesRaw };
+  },
+  computed: {
+    replies() {
+      return this.repliesRaw.filter(
+        (r) => r.type == "Note" && r.inReplyTo == this.messageid
+      );
+    },
+    repliedMessageSnippet() {
+      return this.content.length > 30
+        ? this.content.substring(0, 30) + "..."
+        : this.content;
+    },
+  },
+  methods: {
+    // #####################################################################
+    replyReplies(replyId) {
+      return this.repliesRaw.filter(
+        (r) => r.type == "Note" && r.inReplyTo == replyId
+      );
+    },
+    // ################ send a reply ##################
+
+    sendReply() {
+      if (this.replyContent.trim()) {
+        const inReplyTo = this.replyingToReply
+          ? this.replyingToReply.id
+          : this.messageid;
+        this.$gf.post({
+          type: "Note",
+          content: this.replyContent,
+          inReplyTo: inReplyTo,
+          context: [this.messageid],
+          to: [this.sender],
+        });
+        this.replyContent = "";
+        this.showReplyForm = false;
+        this.replyingToReply = null;
+      }
+    },
+
+    startReplyToReply(reply) {
+      this.replyingToReply = reply;
+      this.showReplyForm = true;
+    },
+    confirmDelete(reply) {
+      if (window.confirm("Are you sure you want to delete this message?")) {
+        this.removeReply(reply);
+      }
+    },
+    removeReply(reply) {
+      this.$gf.remove(reply);
+    },
+    startEditReply(reply) {
+      this.editingReply = reply;
+      this.editText = reply.content;
+    },
+    saveEditReply() {
+      if (this.editText.trim()) {
+        this.editingReply.content = this.editText;
+        this.$gf.update(this.editingReply);
+        this.editingReply = null;
+      }
+    },
+  },
+  template: "#reply",
+};
 
 // ################### Profile Picture ##########################
 
@@ -813,6 +982,13 @@ const ProfilePicture = {
             !prev || curr.published > prev.published ? curr : prev,
           null
         );
+    },
+    replies() {
+      const replies = this.repliesRaw.filter(
+        (r) => r.type == "Note" && r.inReplyTo == this.messageid
+      );
+      this.translateAllMessages(replies);
+      return replies;
     },
   },
 
@@ -870,7 +1046,6 @@ const ProfilePicture = {
   template: "#profile-picture",
 };
 
-// app.components = { Name, Like, Read, Reply, ProfilePicture };
-app.components = { Name, Like, Read, ProfilePicture };
+app.components = { Name, Like, Read, Reply, ProfilePicture };
 
 Vue.createApp(app).use(GraffitiPlugin(Vue)).mount("#app");

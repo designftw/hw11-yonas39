@@ -627,13 +627,13 @@
                       ></read>
                     </li>
 
-                    <!-- <li>
+                    <li>
                       <reply
                         :messageid="message.id"
                         :content="message.content"
                         :sender="message.sender"
                       ></reply>
-                    </li> -->
+                    </li>
                   </div>
                   <div class="message-timestamp">
                     <span>{{ formatDate(message.published) }}</span>
@@ -711,7 +711,7 @@
 
     <!-- ############# REPLY Template ################# -->
 
-    <!-- <template id="reply">
+    <template id="reply">
       <div class="reply-container">
         <button @click="showReplyForm = !showReplyForm">Reply ⏎</button>
         <div v-if="showReplyForm" class="reply-form">
@@ -744,7 +744,18 @@
               <button @click="saveEditReply">Save</button>
             </span>
             <span v-else>
-              {{ reply.content }}
+              <!-- {{ reply.content }} -->
+              <!-- <span>{{ translate(reply.content) }}</span> -->
+              <!-- <span v-if="translatedMessages[reply.id]">
+                {{ translatedMessages[reply.id].translatedText }}
+              </span> -->
+              <p id="text-message">
+                <span v-if="translatedMessages[reply.id]">
+                  <!-- {{ translatedMessages[reply.id].translatedText }} -->
+                  {{translateMessage(reply.Content)}}
+                </span>
+                <span> {{reply.content}} </span>
+              </p>
               <template v-if="reply.actor === $gf.me">
                 <button @click="confirmDelete(reply)">Delete 🗑️</button>
                 <button @click="startEditReply(reply)">Edit ✍🏾</button>
@@ -782,7 +793,17 @@
                   <button @click="saveEditReply">Save</button>
                 </span>
                 <span v-else>
-                  {{ subReply.content }}
+                  <!-- {{ subReply.content }} -->
+                  <!-- <span v-if="translatedMessages[subReply.id]">
+                    {{ translatedMessages[subReply.id].translatedText }}
+                  </span> -->
+                  <p id="text-message">
+                    <span v-if="translatedMessages[subReply.id]">
+                      <!-- {{ translatedMessages[subReply.id].translatedText }} -->
+                      {{translateMessage(subReply.Content)}}
+                    </span>
+                    <span> {{subReply.content}} </span>
+                  </p>
                   <template v-if="subReply.actor === $gf.me">
                     <button @click="confirmDelete(subReply)">Delete 🗑️</button>
                     <button @click="startEditReply(subReply)">Edit ✍🏾</button>
@@ -794,7 +815,7 @@
           </div>
         </div>
       </div>
-    </template> -->
+    </template>
 
     <!--############### Profile picture #################### -->
 

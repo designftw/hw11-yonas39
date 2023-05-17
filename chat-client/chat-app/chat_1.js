@@ -30,12 +30,7 @@ const app = {
 
     // Initialize the collection of messages associated with the context
     const { objects: messagesRaw } = $gf.useObjects(context);
-    return { channel, privateMessaging, messagesRaw }; // Commented to test the code below
-
-    // ############### Read Activity ####################
-    // const { objects: readActivities } = $gf.useObjects(context);
-    // return { channel, privateMessaging, messagesRaw, readActivities };
-    // return { channel, privateMessaging, messagesRaw };
+    return { channel, privateMessaging, messagesRaw };
   },
 
   data() {
@@ -51,9 +46,7 @@ const app = {
       preferredUsername: "", // I added this
       usernameResult: "", // I added this
 
-      // requestedUsername: "", // I added this
-      // usernameError: "", // I added this
-      // usernameSuccess: "", // I added this
+      emptyUsername: "", // I added this
 
       // Problem-2
       searchError: "", // I added this
@@ -71,7 +64,7 @@ const app = {
 
       // Need to double check the line below this
       usernames: {}, // I added this
-
+      name: "",
       encounteredUsernames: [], //I added this
 
       showHelpModal: false, // I added this
@@ -120,6 +113,7 @@ const app = {
             await this.resolver.actorToUsername(m.bto[0]);
         }
       }
+      // alert(messages);
     },
 
     async messagesWithAttachments(messages) {
@@ -155,12 +149,6 @@ const app = {
       },
       deep: true,
     },
-
-    // ################# app THEME ##################
-    // theme(newValue) {
-    //   document.body.classList.remove("light", "dark");
-    //   document.body.classList.add(newValue);
-    // },
   },
 
   computed: {
@@ -205,7 +193,7 @@ const app = {
           // most recently created ones first
           .sort((m1, m2) => new Date(m2.published) - new Date(m1.published))
           // Only show the 10 most recent ones
-          .slice(0, 10)
+          .slice(0, 20)
       );
     },
 
@@ -236,7 +224,11 @@ const app = {
       return this.readActivities.filter((activity) => activity.type === "Read");
     },
   },
-
+  provide() {
+    return {
+      translateContent: this.translateMessage,
+    };
+  },
   methods: {
     // ##################################################################
     // ########################## Setting ###############################
@@ -353,13 +345,6 @@ const app = {
     },
     // ###### media END ############
 
-    // ######### ... Typing  ############
-    handleInputFocus() {
-      this.isTyping = true;
-    },
-    handleInputBlur() {
-      this.isBlur = false;
-    },
     // #################################################################
     // ######## Date Format ############################################
 
@@ -428,6 +413,13 @@ const app = {
     // ########################## Request Username #################################
     // ########################## Request Username #################################
     async setUsername() {
+      if (!this.preferredUsername) {
+        this.emptyUsername = "Empty! Please Write a Username ";
+        setTimeout(() => {
+          this.emptyUsername = "";
+        }, 3000);
+        return;
+      }
       try {
         this.usernameResult = await this.resolver.requestUsername(
           this.preferredUsername
@@ -709,94 +701,96 @@ const Read = {
 
 //  ############ REPLY ###################
 
-const Reply = {
-  name: "Reply",
-  props: ["messageid", "content", "sender"],
-  data() {
-    return {
-      replyContent: "",
-      showReplyForm: false,
-      replyingToReply: null,
-      editingReply: null,
-      editText: "",
-    };
-  },
-  setup(props) {
-    const $gf = Vue.inject("graffiti");
-    const messageid = Vue.toRef(props, "messageid");
-    const { objects: repliesRaw } = $gf.useObjects([messageid]);
-    return { repliesRaw };
-  },
-  computed: {
-    replies() {
-      return this.repliesRaw.filter(
-        (r) => r.type == "Note" && r.inReplyTo == this.messageid
-      );
-    },
-    repliedMessageSnippet() {
-      return this.content.length > 30
-        ? this.content.substring(0, 30) + "..."
-        : this.content;
-    },
-  },
-  methods: {
-    // #####################################################################
-    replyReplies(replyId) {
-      return this.repliesRaw.filter(
-        (r) => r.type == "Note" && r.inReplyTo == replyId
-      );
-    },
-    sendReply() {
-      if (this.replyContent.trim()) {
-        const inReplyTo = this.replyingToReply
-          ? this.replyingToReply.id
-          : this.messageid;
-        this.$gf.post({
-          type: "Note",
-          content: this.replyContent,
-          inReplyTo: inReplyTo,
-          context: [this.messageid],
-          to: [this.sender],
-        });
-        this.replyContent = "";
-        this.showReplyForm = false;
-        this.replyingToReply = null;
-      }
-    },
-    startReplyToReply(reply) {
-      this.replyingToReply = reply;
-      this.showReplyForm = true;
-    },
-    confirmDelete(reply) {
-      if (window.confirm("Are you sure you want to delete this message?")) {
-        this.removeReply(reply);
-      }
-    },
-    removeReply(reply) {
-      this.$gf.remove(reply);
-    },
-    startEditReply(reply) {
-      this.editingReply = reply;
-      this.editText = reply.content;
-    },
-    saveEditReply() {
-      if (this.editText.trim()) {
-        this.editingReply.content = this.editText;
-        this.$gf.update(this.editingReply);
-        this.editingReply = null;
-      }
-    },
-  },
-  template: "#reply",
-};
+// const Reply = {
+//   name: "Reply",
+//   props: ["messageid", "content", "sender"],
+//   data() {
+//     return {
+//       replyContent: "",
+//       showReplyForm: false,
+//       replyingToReply: null,
+//       editingReply: null,
+//       editText: "",
+//     };
+//   },
+
+//   setup(props) {
+//     const $gf = Vue.inject("graffiti");
+//     const messageid = Vue.toRef(props, "messageid");
+//     const { objects: repliesRaw } = $gf.useObjects([messageid]);
+//     return { repliesRaw };
+//   },
+//   computed: {
+//     replies() {
+//       return this.repliesRaw.filter(
+//         (r) => r.type == "Note" && r.inReplyTo == this.messageid
+//       );
+//     },
+//     repliedMessageSnippet() {
+//       return this.content.length > 30
+//         ? this.content.substring(0, 30) + "..."
+//         : this.content;
+//     },
+//   },
+//   methods: {
+//     // #####################################################################
+//     replyReplies(replyId) {
+//       return this.repliesRaw.filter(
+//         (r) => r.type == "Note" && r.inReplyTo == replyId
+//       );
+//     },
+//     // ################ send a reply ##################
+
+//     sendReply() {
+//       if (this.replyContent.trim()) {
+//         const inReplyTo = this.replyingToReply
+//           ? this.replyingToReply.id
+//           : this.messageid;
+//         this.$gf.post({
+//           type: "Note",
+//           content: this.replyContent,
+//           inReplyTo: inReplyTo,
+//           context: [this.messageid],
+//           to: [this.sender],
+//         });
+//         this.replyContent = "";
+//         this.showReplyForm = false;
+//         this.replyingToReply = null;
+//       }
+//     },
+
+//     startReplyToReply(reply) {
+//       this.replyingToReply = reply;
+//       this.showReplyForm = true;
+//     },
+//     confirmDelete(reply) {
+//       if (window.confirm("Are you sure you want to delete this message?")) {
+//         this.removeReply(reply);
+//       }
+//     },
+//     removeReply(reply) {
+//       this.$gf.remove(reply);
+//     },
+//     startEditReply(reply) {
+//       this.editingReply = reply;
+//       this.editText = reply.content;
+//     },
+//     saveEditReply() {
+//       if (this.editText.trim()) {
+//         this.editingReply.content = this.editText;
+//         this.$gf.update(this.editingReply);
+//         this.editingReply = null;
+//       }
+//     },
+//   },
+//   template: "#reply",
+// };
 
 // ################### Profile Picture ##########################
 
 const ProfilePicture = {
   props: ["actor", "editable"],
-  // components: {
-  //   Reply,
-  // },
+
   setup(props) {
     const { actor } = Vue.toRefs(props);
     const $gf = Vue.inject("graffiti");
@@ -876,11 +870,7 @@ const ProfilePicture = {
   template: "#profile-picture",
 };
 
-app.components = { Name, Like, Read, Reply, ProfilePicture };
-// app.component("Name", Name);
-// app.component("Like", Like);
-// app.component("Read", Read);
-// app.component("Reply", Reply);
-// app.component("ProfilePicture", ProfilePicture);
+// app.components = { Name, Like, Read, Reply, ProfilePicture };
+app.components = { Name, Like, Read, ProfilePicture };
 
 Vue.createApp(app).use(GraffitiPlugin(Vue)).mount("#app");

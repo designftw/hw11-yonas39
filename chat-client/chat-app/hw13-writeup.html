@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Application Design Description</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        width: 80%;
+        margin: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Chat Application Design Description</h1>
+
+      <h2>Problem Statement</h2>
+      <p>
+        Communication is a crucial aspect of any community or organization. The
+        problems that needed to be addressed were an interactive and
+        user-friendly platform for real-time conversation and interaction that
+        solves the challenge of understanding messages sent in different
+        languages.
+      </p>
+
+      <h2>Solution Overview</h2>
+      <p>
+        The provided design is an interactive, real-time chat interface that
+        addresses the problems stated above. It is a Vue.js-based design that
+        allows users to:
+      </p>
+      <ul>
+        <li>
+          <strong>Send Messages:</strong> Users can type and send messages in
+          real time.
+        </li>
+        <li>
+          <strong>Edit Messages:</strong> A user can edit their own messages
+          after sending them.
+        </li>
+        <li>
+          <strong>Like Messages:</strong> Messages can be liked, providing a way
+          to react to a message.
+        </li>
+        <li>
+          <strong>Read Confirmation:</strong> The design also includes a read
+          confirmation feature that indicates when a message has been read.
+        </li>
+        <li>
+          <strong>Translate Messages:</strong> Messages sent in a different
+          language can be translated to the user's preferred language, breaking
+          language barriers and improving understanding.
+        </li>
+        <li>
+          <strong>Profile Pictures:</strong> The design allows users to add or
+          change their profile pictures.
+        </li>
+      </ul>
+
+      <h2>How It Works</h2>
+      <p>
+        The design uses Vue.js, a progressive JavaScript framework. Each feature
+        is represented as a Vue component. The 'like', 'read', 'edit message',
+        and 'translation' functionalities are handled by individual Vue
+        components, and these components interact with the main chat interface
+        to reflect changes in real time.
+      </p>
+      <p>
+        The chat interface also includes a form for sending messages. When a
+        message is sent, it gets added to the list of existing messages and the
+        update is made in real time. The chat interface also shows a timestamp
+        for each message, enhancing the user experience.
+      </p>
+      <p>
+        The design also includes a profile picture component. Users can choose
+        to add or change their profile picture. The profile picture is displayed
+        next to the user's name in the chat interface, making it easy for users
+        to identify each other.
+      </p>
+      <p>
+        The translation feature is particularly noteworthy. When a message is
+        sent in a different language, the 'translateMessage' Vue function is
+        activated. This function uses a language detection and translation API
+        to translate the message to the user's preferred language. The
+        translated message is then displayed in the chat interface. This feature
+        breaks language barriers and improves understanding among users who
+        speak different languages. Suppose the user wants to opt out of
+        translation. In that case, they can select 'none' from the setting
+        'translate to' option or opt out of translating the languages they
+        understand by choosing one or multiple languages from the 'Preserve
+        original for' setting option. If the users want a guide on using the
+        chat app, they can check the help menu provided in the setting.
+      </p>
+      <p>
+        Furthermore, the user can change the chat mode by using the toggle
+        button on the screen. And also choose their choice of chat channel in
+        public chat.
+      </p>
+    </div>
+  </body>
+</html>

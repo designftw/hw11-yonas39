@@ -218,7 +218,7 @@ input[type="submit"]:hover {
 .read-indicator {
   display: block;
   font-size: 14px;
-  color: #ee1a48;
+  color: green;
   margin-left: 4px;
 }
 #like {
@@ -623,7 +623,7 @@ input[type="submit"]:hover {
   margin-top: 2em;
   padding: 1em;
   display: block;
-  /* text-align: center; */
+  text-align: center;
   font-weight: bold;
 }
 #chat-span {

@@ -204,9 +204,9 @@ input:checked + .slider:before {
 }
 
 /* ############# Channel-based public chat ####################### */
-.channel-base {
+/* .channel-base {
   display: none;
-}
+} */
 
 /* ############# Setting, Edit and New-Message styling ############### */
 /* Style the top buttons container */
